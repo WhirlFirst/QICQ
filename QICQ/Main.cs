@@ -557,7 +557,7 @@ namespace QICQ
                     return;
                 }
                 string friends = ID;
-                Application.Run(new ChatDialog(ID, friends, chatSocket, 1));
+                Application.Run(new ChatDialog(username, friends, chatSocket, 1));
             }
         }
 
