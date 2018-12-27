@@ -194,6 +194,8 @@ namespace QICQ
             }
             holo.Text = "你好！" + username;
 
+            Directory.CreateDirectory("Data/Chat/");
+
             if (!File.Exists("Data/user.txt"))
             {
                 FileStream fs1 = new FileStream("Data/user.txt", FileMode.Create);
