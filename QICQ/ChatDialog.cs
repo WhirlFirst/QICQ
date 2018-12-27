@@ -26,12 +26,15 @@ namespace QICQ
         string friends;
         volatile Socket[] sockets;
         int conNum;
+        int start = 0;
+        int count = 0;
         bool richTextBox_show_writing = false;
         Thread renew;
         private volatile bool canStop = false;
         private volatile bool filefinsh = false;
         private delegate void RichBox_Show(string str, Color color, HorizontalAlignment direction);
-        private delegate void Disconnect();
+        private delegate void DoWark(int value);
+        private delegate int GetTxtLen();
         private delegate GifBox Paste(Image image,int p);
         private delegate void receive_save(Socket File_client, Message msg);
         public ChatDialog()
@@ -46,6 +49,11 @@ namespace QICQ
             friends = chatters;
             sockets = tsockets;
             conNum = num;
+            if(File.Exists("Data/Chat/" + friends + ".rtf"))
+            {
+                recivebox.LoadFile("Data/Chat/" + friends + ".rtf");
+                ShowMsg_inRichTextBox("\n\n", Color.LightSkyBlue, HorizontalAlignment.Right);
+            }
             renew = new Thread(() => AsynRecive(sockets));
             renew.SetApartmentState(ApartmentState.STA);
             renew.IsBackground = true;
@@ -59,6 +67,7 @@ namespace QICQ
             recivebox.SelectionAlignment = direction;
             //向文本框的文本追加文本
             recivebox.AppendText(str);
+            recivebox.ScrollToCaret();
         }
 
         #region 异步接受客户端消息
@@ -70,7 +79,7 @@ namespace QICQ
         {
             if (!canStop)
             {
-                byte[] data = new byte[1024];
+                byte[] data = new byte[1024*2];
                 try
                 {
                     foreach (Socket tcpClient in links)   //遍历所有连接的套接字
@@ -86,7 +95,9 @@ namespace QICQ
                                     length = tcpClient.EndReceive(asyncResult);
                                 if (length == 0)
                                 {
-                                    MessageBox.Show("好友退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    int connect_num = links.Length;
+                                    if(connect_num>1) MessageBox.Show("有好友退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    else MessageBox.Show("好友退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     if (this.IsHandleCreated)
                                     {
                                         this.Invoke(new Action(this.Close));
@@ -103,9 +114,19 @@ namespace QICQ
                                         richTextBox_show_writing = true;   //占用之
                                         RichBox_Show rb_s = new RichBox_Show(ShowMsg_inRichTextBox);
                                         string show_string = msg.MsgBody;
+                                        this.Invoke(rb_s, new object[] { "\n", Color.Black, HorizontalAlignment.Left });
                                         this.Invoke(rb_s, new object[] { show_string, Color.Black, HorizontalAlignment.Left });
                                         richTextBox_show_writing = false;  //恢复不被占用
+                                        if (sockets.Length > 1)
+                                        {
+                                            foreach (Socket Client in sockets)
+                                            {
+                                                if (Client == null) break;
+                                                AsynSend(Client, show_string);
+                                            }
+                                        }
                                         break;
+                                        
                                     case Message.EType.file:
                                         receive_save r_s = new receive_save(ReceiveFileConnect);
                                         this.Invoke(r_s, new object[] { tcpClient,msg });
@@ -113,38 +134,6 @@ namespace QICQ
                                         filefinsh = false;
                                         break;
                                 }
-                                //string rcv_msg = Encoding.UTF8.GetString(data, 0, length);
-                                ////如果是服务器，则向其他客户端转发该消息
-                                //foreach (Socket otherClient in links)
-                                //{
-                                //    if (otherClient == null) break;
-                                //    if (otherClient != tcpClient)
-                                //        AsynSend(otherClient, rcv_msg);
-                                //}
-
-                                //if (rcv_msg == "<file>")
-                                //{
-                                //    receive_save r_s = new receive_save(ReceiveFileConnect);
-                                //    this.Invoke(r_s, new object[] { tcpClient });
-                                //    while (!filefinsh) { }
-                                //    filefinsh = false;
-                                //}
-                                //else if (rcv_msg == "<__cmd__shake__>")
-                                //{
-                                //    //Shake shake = new Shake(Window_Shake);
-                                //    //this.Invoke(shake, new object[] { });
-                                //}
-                                //else
-                                //{
-                                //    //如果当前写字框没有被占用
-                                //    while (richTextBox_show_writing) { };
-                                //    //等到其他线程解除了写字框的占用
-                                //    richTextBox_show_writing = true;   //占用之
-                                //    RichBox_Show rb_s = new RichBox_Show(ShowMsg_inRichTextBox);
-                                //    string show_string = rcv_msg;
-                                //    this.Invoke(rb_s, new object[] { show_string, Color.Black, HorizontalAlignment.Left });
-                                //    richTextBox_show_writing = false;  //恢复不被占用
-                                //}
                                 AsynRecive(links);
                             }
                             catch (Exception ex)
@@ -210,17 +199,18 @@ namespace QICQ
             try
             {
                 string send_msg = sendbox.Text;
+
                 //如果当前写字框没有被占用
                 while (richTextBox_show_writing) { };
                 //等到其他线程解除了写字框的占用
                 richTextBox_show_writing = true;   //占用之
                 RichBox_Show rb_s = new RichBox_Show(ShowMsg_inRichTextBox);
                 string show_string = DateTime.Now.ToString()
-                                            + "\n"+"说：\n" + send_msg + "\n\n";
+                                            + "\n"+userID+"说：\n" + send_msg + "\n";
                 this.Invoke(rb_s, new object[] { show_string, Color.Blue, HorizontalAlignment.Right });
                 richTextBox_show_writing = false;  //恢复不被占用
                 sendbox.Text = "";
-                send_msg = DateTime.Now.ToString() + "\n" + userID + "说：\n" + send_msg + "\n\n";
+                send_msg = DateTime.Now.ToString() + "\n" + userID + "说：\n" + send_msg + "\n";
 
                 foreach (Socket Client in sockets)
                 {
@@ -246,8 +236,11 @@ namespace QICQ
                 Client.Shutdown(SocketShutdown.Both);
                 Client.Close();
             }
+            ShowMsg_inRichTextBox("\n", Color.LightSkyBlue, HorizontalAlignment.Center);
+            ShowMsg_inRichTextBox("以上为"+ DateTime.Now.ToString()+"之前的聊天记录", Color.LightSkyBlue, HorizontalAlignment.Center);
+            recivebox.SaveFile("Data/Chat/" + friends + ".rtf");
+            return;
 
-            
         }
 
         private void test_Click(object sender, EventArgs e)
@@ -266,11 +259,14 @@ namespace QICQ
                     try
                     {
                         bmp = new Bitmap(fileName);
-                        Clipboard.SetDataObject(bmp);
-                        DataFormats.Format dataFormat =
-                        DataFormats.GetFormat(DataFormats.Bitmap);
-                        Paste p = new Paste(recivebox.InsertImage);
-                        recivebox.BeginInvoke(p, new object[] { bmp, 0 });
+                        int wid = bmp.Width;
+                        int hei = bmp.Height;
+                        Paste p = new Paste(getl);
+                        GetTxtLen @do = new GetTxtLen(()=> { return recivebox.TextLength; });
+                        IAsyncResult ia = this.BeginInvoke(@do);
+                        int length = (int)this.EndInvoke(ia);
+                        sendbox.BeginInvoke(p, new object[] { bmp,  length});
+                        sendbox.BeginInvoke(new Action(sendbox.ScrollToCaret));
                         //if (recivebox.CanPaste(dataFormat))
                         //    recivebox.Paste(dataFormat);
                         return;
@@ -284,7 +280,13 @@ namespace QICQ
             });
             readfile.SetApartmentState(System.Threading.ApartmentState.STA);
             readfile.Start();
-            readfile.Join();
+            return;
+            GifBox getl(Image image,int p)
+            {
+                GifBox g = recivebox.InsertImage(image, p);
+                recivebox.SelectionStart = recivebox.TextLength;
+                return g;
+            } 
         }
 
         private void recivebox_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -306,21 +308,24 @@ namespace QICQ
             {
                 DialogResult dr = MessageBox.Show("好友要向你传一个文件，是否接收？", "提示"
                                                 , MessageBoxButtons.OKCancel);
+                string name = msg.MsgBody;
+                long len = msg.Length;
                 if (dr == DialogResult.OK)
                 {
                     //用户选择确认的操作
                     saveFileDialog1.Title = "请保存文件";
+                    saveFileDialog1.Filter = "文件类型" + name + "|*" + name;
                     if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                     {
-                        string name = msg.MsgBody;
-                        long len = msg.Length;
                         string fileSavePath = saveFileDialog1.FileName;//获得用户保存文件的路径
                         int total = 0;
                         int received;
                         int buffer_size = 1024*1024;
                         byte[] buffer = new byte[buffer_size];
-                        fileSavePath = fileSavePath + name;
                         FileStream fs = new FileStream(fileSavePath, FileMode.Create, FileAccess.Write);
+                        DoWark @do = new DoWark(setBar);
+                        this.Invoke(new Action(this.fileBar.Show));
+                        this.BeginInvoke(@do, new object[] { 0 });
                         while (true)
                         {
                             received = File_client.Receive(buffer, buffer_size, SocketFlags.None);
@@ -334,11 +339,13 @@ namespace QICQ
                             fs.Write(buffer, 0, received);
                             fs.Flush();
                             total += received;
+                            this.BeginInvoke(@do, new object[] { (int)(((double)total / (double)len) * 100.0) });
                             if (total==len)
                             {
                                 break;
                             }
                         }
+                        this.Invoke(new Action(this.fileBar.Hide));
                         fs.Close();
                         MessageBox.Show(fileSavePath + "文件接收完毕", "信息提示");
                     }
@@ -372,7 +379,7 @@ namespace QICQ
                     //用户选择取消的操作，只转发
                     int total = 0;
                     int received;
-                    int buffer_size = 1000000;
+                    int buffer_size = 100000;
                     byte[] buffer = new byte[buffer_size];
                     while (true)
                     {
@@ -396,6 +403,7 @@ namespace QICQ
             });
             savefile.SetApartmentState(ApartmentState.STA);
             savefile.Start();
+            return;
         }
         #endregion
 
@@ -439,6 +447,86 @@ namespace QICQ
             });
             readfile.SetApartmentState(ApartmentState.STA);
             readfile.Start();
+            return;
+        }
+
+        private void setBar(int value)
+        {
+            this.fileBar.Value = value;
+            this.fileBar.Update();
+        }
+
+        private void toolFace_Click(object sender, EventArgs e)
+        {
+            Bitmap bmp = new Bitmap("E:\\THU\\QICQ\\gif\\hj.gif");
+            this.sendbox.InsertImage(bmp, this.sendbox.TextLength);
+            this.sendbox.Focus();
+            this.sendbox.ScrollToCaret();
+            string rtf = sendbox.Rtf;
+            recivebox.AppendRtf(rtf);
+            return;
+        }
+
+        private void findbtn_Click(object sender, EventArgs e)
+        {
+            string find = findtxt.Text.ToString();
+            if (find == "")
+            {
+                MessageBox.Show("请输入要查询的内容", "查询错误", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (start >= recivebox.Text.Length)
+            {
+                MessageBox.Show("已查找到尾部");
+
+                start = 0;
+
+            }
+
+            else
+
+            {
+
+                start = recivebox.Find(find, start, RichTextBoxFinds.MatchCase);
+
+                if (start == -1)
+
+                {
+
+                    if (count == 0)
+
+                    {
+                        MessageBox.Show("没有该字符");
+                        start = 0;
+                    }
+
+                    else
+
+                    {
+                        MessageBox.Show("已查找到尾部！");
+                        start = 0;
+                        count = 0;
+                    }
+
+                }
+
+                else
+
+                {
+
+                    start = start + find.Length;
+                    count += 1;
+                    recivebox.Focus();
+
+                }
+
+            }
+        }
+
+        private void findtxt_TextChanged(object sender, EventArgs e)
+        {
+            start = 0;
+            count = 0;
         }
     }
 }

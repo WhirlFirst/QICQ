@@ -43,13 +43,17 @@ namespace QICQ
             /// </summary>
             gif,
             /// <summary>
-            /// 客户端用户相互聊天
+            /// 客户端文件
             /// </summary>
             file,
             /// <summary>
             /// 闪屏
             /// </summary>
-            sp
+            sp,
+            /// <summary>
+            /// 连接
+            /// </summary>
+            con
         }
     }
 }
