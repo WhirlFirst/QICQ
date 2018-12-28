@@ -252,6 +252,7 @@ namespace QICQ
             {
                 int num = 0;
                 int tmp;
+                string[] ipAddress;
                 DirectoryInfo TheFolder = new DirectoryInfo("Data/Chat/");
                 //遍历文件夹
                 num = TheFolder.GetFiles().Length;
@@ -259,7 +260,7 @@ namespace QICQ
                 {
                     string[] arrshow = NextFolder.Name.Substring(0, NextFolder.Name.Length - 4).Split('_');
                     string show = "";
-                    string[] ipAddress = new string[arrshow.Length];
+                    ipAddress = new string[arrshow.Length];
                     int i = 0;
                     foreach (string sh in arrshow)
                     {
@@ -268,7 +269,7 @@ namespace QICQ
                         i = i + 1;
                     }
                     show = show.Substring(0, show.Length - 1);
-                    ChatInfo chatInfo = new ChatInfo(user, show, ipAddress);
+                    ChatInfo chatInfo = new ChatInfo(user, show, ipAddress,Socket_user_server);
                     AddChat(chatInfo);
                 }
                 while (true)
@@ -282,7 +283,7 @@ namespace QICQ
                         {
                             string[] arrshow = NextFolder.Name.Substring(0, NextFolder.Name.Length-4).Split('_');
                             string show = "";
-                            string[] ipAddress = new string[arrshow.Length];
+                            ipAddress = new string[arrshow.Length];
                             int i = 0;
                             foreach (string sh in arrshow)
                             {
@@ -291,7 +292,7 @@ namespace QICQ
                                 i = i + 1;
                             }
                             show = show.Substring(0, show.Length - 1);
-                            ChatInfo chatInfo = new ChatInfo(user,show, ipAddress);
+                            ChatInfo chatInfo = new ChatInfo(user,show, ipAddress,Socket_user_server);
                             AddChat(chatInfo);
                         }
                         num = tmp;

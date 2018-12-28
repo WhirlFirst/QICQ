@@ -18,18 +18,42 @@ namespace QICQ
     {
         string member;
         string user;
-        string[] IP;
+        public string[] IP;
+        Socket Socket_user_server;
         public ChatInfo()
         {
             InitializeComponent();
         }
-        public ChatInfo(string username, string mem,string[] ip)
+        public ChatInfo(string username, string mem,string[] ip,Socket server)
         {
             member = mem;
             IP = ip;
             user = username;
+            Socket_user_server = server;
             InitializeComponent();
             TItle.Text = "与"+member+"的聊天";
+        }
+
+        public string Search(string IDnumber)
+        {
+            string IP_search = "q" + IDnumber;//向服务器发送的查询信息
+            byte[] IP_search_byte = new byte[1024];
+            IP_search_byte = Encoding.ASCII.GetBytes(IP_search);
+            try
+            {
+                Socket_user_server.Send(IP_search_byte);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("未知错误，无法连接服务器或者其他", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return ("");
+            }
+
+            //接收用户信息
+            byte[] IP_receive_byte = new byte[1024];
+            int number = Socket_user_server.Receive(IP_receive_byte);
+            string IP_receive_mess = Encoding.Default.GetString(IP_receive_byte, 0, number);
+            return IP_receive_mess;
         }
 
         private void delbtn_MouseEnter(object sender, EventArgs e)
@@ -72,19 +96,26 @@ namespace QICQ
         {
             int Number_Connected = 0;
             string Users_Broadcast_Msg;
+            string[] friends = user.Split('，');
+            int i = 0;
             foreach(string ipa in IP)
             {
                 if(ipa=="n")
                 {
-                    MessageBox.Show("要发起会话的好友有人不在线", "无法发起会话"
+                    IP[i] = Search(friends[i]);
+                    if (IP[i] == "n")
+                    {
+                        MessageBox.Show("要发起会话的好友有人不在线", "无法发起会话"
                                      , MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                        return;
+                    }
                 }
+                i = i + 1;
             }
             string[] memarr = member.Split('，');
             Socket[] Chatters = new Socket[IP.Length];
             //向所有选中的人广播除了它自己外其他人的ID
-            int i = 0;
+            i = 0;
             foreach (string ip in IP)
             {
                 //广播信息的第一条ID是自己的ID，ID与ID之间是连续的，通过/来分割

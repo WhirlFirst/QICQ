@@ -357,6 +357,23 @@ namespace QICQ
                         this.Invoke(new Action(this.fileBar.Hide));
                         fs.Close();
                         MessageBox.Show(fileSavePath + "文件接收完毕", "信息提示");
+                        string strOpenFileName = fileSavePath;//打开的文件的全限定名
+                        FileInfo fi = new FileInfo(strOpenFileName);
+                        byte[] data = SerHelper.Serialize(msg);
+                        foreach (Socket Client in sockets)
+                        {
+                            if (Client == null) break;
+                            if (Client == File_client) continue;
+                            if (!Client.Connected) continue;
+                            Client.Send(data);
+                            Thread.Sleep(500);
+                            Client.BeginSendFile(strOpenFileName, null, null, TransmitFileOptions.UseDefaultWorkerThread, new AsyncCallback(sendfinish), null);
+
+                            void sendfinish(IAsyncResult iar)
+                            {
+                                Client.EndSendFile(iar);
+                            }
+                        }
                     }
                     else
                     {
@@ -389,6 +406,7 @@ namespace QICQ
                             if (Client == File_client) continue;
                             if (!Client.Connected) continue;
                             Client.Send(data);
+                            Thread.Sleep(500);
                             Client.BeginSendFile(strOpenFileName, null, null, TransmitFileOptions.UseDefaultWorkerThread, new AsyncCallback(sendfinish), null);
 
                             void sendfinish(IAsyncResult iar)
@@ -429,6 +447,7 @@ namespace QICQ
                         if (Client == File_client) continue;
                         if (!Client.Connected) continue;
                         Client.Send(data);
+                        Thread.Sleep(500);
                         Client.BeginSendFile(strOpenFileName, null, null, TransmitFileOptions.UseDefaultWorkerThread, new AsyncCallback(sendfinish), null);
 
                         void sendfinish(IAsyncResult iar)
@@ -468,6 +487,7 @@ namespace QICQ
                     {
                         if (Client == null) break;
                         Client.Send(data);
+                        Thread.Sleep(500);
                         Client.BeginSendFile(strOpenFileName, null, null, TransmitFileOptions.UseDefaultWorkerThread,new AsyncCallback(sendfinish),null);
 
                         void sendfinish(IAsyncResult iar)
