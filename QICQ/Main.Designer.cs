@@ -118,9 +118,9 @@
             // 
             this.delid.FlatAppearance.BorderSize = 0;
             this.delid.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.delid.Location = new System.Drawing.Point(43, 577);
+            this.delid.Location = new System.Drawing.Point(10, 577);
             this.delid.Name = "delid";
-            this.delid.Size = new System.Drawing.Size(75, 28);
+            this.delid.Size = new System.Drawing.Size(113, 28);
             this.delid.TabIndex = 4;
             this.delid.Text = "恩断义绝";
             this.delid.UseVisualStyleBackColor = true;
@@ -242,9 +242,9 @@
             // 
             this.button1.FlatAppearance.BorderSize = 0;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(155, 577);
+            this.button1.Location = new System.Drawing.Point(129, 577);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 28);
+            this.button1.Size = new System.Drawing.Size(132, 28);
             this.button1.TabIndex = 8;
             this.button1.Text = "群聊";
             this.button1.UseVisualStyleBackColor = true;

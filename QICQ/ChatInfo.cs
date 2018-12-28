@@ -72,16 +72,18 @@ namespace QICQ
         {
             string del = member.Replace("201601", "");
             del = del.Replace('，', '_')+".rtf";
-            File.Delete("Data/Chat/"+ del);
+            File.Delete("Data/" + user + "/Chat/" + del);
         }
 
         public Socket Connect_GroupChat(string IP, string ID, string Users_Broadcast_Msg)
         {
             int port = Int32.Parse(ID.Substring(ID.Length - 4));
+            int num = Users_Broadcast_Msg.Split('_').Length;
             Message message = new Message()
             {
                 MsgBody = Users_Broadcast_Msg,
-                Type = Message.EType.con
+                Type = Message.EType.con,
+                Length = num
             };
             IPEndPoint serverIp = new IPEndPoint(IPAddress.Parse(IP), port);
             Socket tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -96,7 +98,7 @@ namespace QICQ
         {
             int Number_Connected = 0;
             string Users_Broadcast_Msg;
-            string[] friends = user.Split('，');
+            string[] friends = member.Split('，');
             int i = 0;
             foreach(string ipa in IP)
             {

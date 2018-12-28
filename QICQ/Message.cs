@@ -53,7 +53,11 @@ namespace QICQ
             /// <summary>
             /// 连接
             /// </summary>
-            con
+            con,
+            /// <summary>
+            /// 下线
+            /// </summary>
+            lgo
         }
     }
 }

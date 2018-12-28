@@ -216,14 +216,14 @@ namespace QICQ
             }
             holo.Text = "你好！" + username;
 
-            Directory.CreateDirectory("Data/Chat/");
-            Directory.CreateDirectory("Data/Tmp/");
-            if (!File.Exists("Data/user.txt"))
+            Directory.CreateDirectory("Data/"+user+"/Chat/");
+            Directory.CreateDirectory("Data/" + user + "/Tmp/");
+            if (!File.Exists("Data/" + user + "/user.txt"))
             {
-                FileStream fs1 = new FileStream("Data/user.txt", FileMode.Create);
+                FileStream fs1 = new FileStream("Data/" + user + "/user.txt", FileMode.Create);
                 fs1.Close();
             }
-            StreamReader sr = new StreamReader("Data/user.txt", Encoding.Default);
+            StreamReader sr = new StreamReader("Data/" + user + "/user.txt", Encoding.Default);
             String line;
             this.userlist.BeginUpdate();
             while ((line = sr.ReadLine()) != null)
@@ -253,7 +253,7 @@ namespace QICQ
                 int num = 0;
                 int tmp;
                 string[] ipAddress;
-                DirectoryInfo TheFolder = new DirectoryInfo("Data/Chat/");
+                DirectoryInfo TheFolder = new DirectoryInfo("Data/" + user + "/Chat/");
                 //遍历文件夹
                 num = TheFolder.GetFiles().Length;
                 foreach (FileInfo NextFolder in TheFolder.GetFiles())
@@ -274,7 +274,7 @@ namespace QICQ
                 }
                 while (true)
                 {
-                    DirectoryInfo WFolder = new DirectoryInfo("Data/Chat/");
+                    DirectoryInfo WFolder = new DirectoryInfo("Data/" + user + "/Chat/");
                     tmp = WFolder.GetFiles().Length;
                     if (tmp != num)
                     {
@@ -329,7 +329,7 @@ namespace QICQ
             string receive_mess = Encoding.Default.GetString(receive_byte, 0, number);
             if (receive_mess == "loo")
             {
-                MessageBox.Show("成功下线", "信息", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+               // MessageBox.Show("成功下线", "信息", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
             }
             else
             {
@@ -354,10 +354,10 @@ namespace QICQ
             Thread fThread = new Thread(new ThreadStart(Log_out));
             fThread.Start();
             //修改本地好友列表
-            FileStream fs = new FileStream("Data/user.txt", FileMode.Open, FileAccess.Write);
+            FileStream fs = new FileStream("Data/" + username + "/user.txt", FileMode.Open, FileAccess.Write);
             fs.SetLength(0);//清空
             fs.Close();
-            StreamWriter sw = new StreamWriter("Data/user.txt", true);
+            StreamWriter sw = new StreamWriter("Data/" + username + "/user.txt", true);
             //开始写入
             foreach (ListViewItem item in userlist.Items)
             {
@@ -646,10 +646,12 @@ namespace QICQ
         public Socket Connect_GroupChat(string IP,string ID, string Users_Broadcast_Msg)
         {
             int port = Int32.Parse(ID.Substring(ID.Length - 4));
+            int num = Users_Broadcast_Msg.Split('_').Length;
             Message message = new Message()
             {
                 MsgBody = Users_Broadcast_Msg,
-                Type = Message.EType.con
+                Type = Message.EType.con,
+                Length = num
             };
             IPEndPoint serverIp = new IPEndPoint(IPAddress.Parse(IP), port);
             Socket tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -733,13 +735,14 @@ namespace QICQ
                             AddListItem(mid_string);
                         }
                     }
+
                     Socket[] Connect_received = new Socket[1];
                     Connect_received[0] = tcpClient;
                     string show = Users_Broadcast_Received.Replace('_', '，');
                     Task Thread_Chat = Task.Run(() =>
                     {
                         Application.Run(new ChatDialog(username, show
-                                                           , Connect_received, 1));
+                                                           , Connect_received, (int)msg.Length));
                     }
                         );
                     
@@ -773,11 +776,13 @@ namespace QICQ
         private void delid_MouseEnter(object sender, EventArgs e)
         {
             delid.BackColor = Color.Red;
+            delid.ForeColor = Color.White;
         }
 
         private void delid_MouseLeave(object sender, EventArgs e)
         {
             delid.BackColor = Color.White;
+            delid.ForeColor = Color.Black;
         }
 
         private void helpbtn_Click(object sender, EventArgs e)
@@ -805,7 +810,7 @@ namespace QICQ
                     foreach (ListViewItem item_outloop in userlist.SelectedItems)
                     {
                         if (item_outloop.SubItems[0].Text.ToString() == username) continue;
-                        //广播信息的第一条ID是自己的ID，ID与ID之间是连续的，通过/来分割
+                        //广播信息的第一条ID是自己的ID，ID与ID之间是连续的，通过_来分割
                         Users_Broadcast_Msg = username;
                         foreach (ListViewItem iitem in userlist.SelectedItems)
                         {
@@ -829,7 +834,7 @@ namespace QICQ
                     foreach (ListViewItem iitem in userlist.SelectedItems)
                     {
                         if (iitem.SubItems[0].Text.ToString() == username) continue;
-                        friends += iitem.SubItems[0].Text + ",";
+                        friends += iitem.SubItems[0].Text + "，";
                     }
                     friends = friends.Substring(0, friends.Length - 1);
 
