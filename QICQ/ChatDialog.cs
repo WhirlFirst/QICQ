@@ -24,6 +24,7 @@ namespace QICQ
     {
         string userID;
         string friends;
+        string save = "";
         volatile Socket[] sockets;
         int conNum;
         int start = 0;
@@ -49,9 +50,16 @@ namespace QICQ
             friends = chatters;
             sockets = tsockets;
             conNum = num;
-            if(File.Exists("Data/Chat/" + friends + ".rtf"))
+            string[] savename = friends.Split('，');
+            Array.Sort(savename);
+            foreach (string na in savename)
             {
-                recivebox.LoadFile("Data/Chat/" + friends + ".rtf");
+                save += na.Substring(na.Length - 4)+"_";
+            }
+            save = save.Substring(0, save.Length - 1);
+            if (File.Exists("Data/Chat/" + save + ".rtf"))
+            {
+                recivebox.LoadFile("Data/Chat/" + save + ".rtf");
                 ShowMsg_inRichTextBox("\n\n", Color.LightSkyBlue, HorizontalAlignment.Right);
             }
             renew = new Thread(() => AsynRecive(sockets));
@@ -245,7 +253,7 @@ namespace QICQ
             }
             ShowMsg_inRichTextBox("\n", Color.LightSkyBlue, HorizontalAlignment.Center);
             ShowMsg_inRichTextBox("以上为"+ DateTime.Now.ToString()+"之前的聊天记录", Color.LightSkyBlue, HorizontalAlignment.Center);
-            recivebox.SaveFile("Data/Chat/" + friends + ".rtf");
+            recivebox.SaveFile("Data/Chat/" + save + ".rtf");
             return;
 
         }
@@ -353,7 +361,7 @@ namespace QICQ
                     else
                     {
                         //用户在保存文件对话框中没有选择文件，所以只转发
-                        string fileSavePath = "Data/Tmp/f1"+name;
+                        string fileSavePath = "Data/Tmp/f1"+userID.Substring(userID.Length-4)+name;
                         int total = 0;
                         int received;
                         int buffer_size = 1024 * 1024;
@@ -393,7 +401,7 @@ namespace QICQ
                 else if (dr == DialogResult.Cancel)
                 {
                     //用户选择取消的操作，只转发
-                    string fileSavePath = "Data/Tmp/f1" + name;
+                    string fileSavePath = "Data/Tmp/f1" + userID.Substring(userID.Length - 4) + name;
                     int total = 0;
                     int received;
                     int buffer_size = 1024 * 1024;

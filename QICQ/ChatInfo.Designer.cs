@@ -35,6 +35,7 @@
             // 
             // TItle
             // 
+            this.TItle.AutoEllipsis = true;
             this.TItle.AutoSize = true;
             this.TItle.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.TItle.Location = new System.Drawing.Point(3, 9);
@@ -53,6 +54,7 @@
             this.openbtn.TabIndex = 1;
             this.openbtn.Text = "打开";
             this.openbtn.UseVisualStyleBackColor = true;
+            this.openbtn.Click += new System.EventHandler(this.openbtn_Click);
             // 
             // delbtn
             // 

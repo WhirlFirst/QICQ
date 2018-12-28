@@ -21,6 +21,7 @@ namespace QICQ
     {
         public string username;
         Thread fresh;
+        Thread msginfo;
         Socket Socket_user_server;//本机套接字
         Socket Nsocket;
         Socket tcpServer;
@@ -198,6 +199,7 @@ namespace QICQ
             InitializeComponent();
         }
 
+
         public Main(string user, Socket client, Login tlogin)
         {
             InitializeComponent();
@@ -246,15 +248,55 @@ namespace QICQ
             sr.Close();
             flowLayoutPanel1.WrapContents = false;
                 tcpServer =  StartListening(tcpServer);
-            Thread msginfo = new Thread(() =>
+            msginfo = new Thread(() =>
             {
-                    DirectoryInfo TheFolder = new DirectoryInfo("Data/Chat/");
-                    //遍历文件夹
-                    foreach (FileInfo NextFolder in TheFolder.GetFiles())
+                int num = 0;
+                int tmp;
+                DirectoryInfo TheFolder = new DirectoryInfo("Data/Chat/");
+                //遍历文件夹
+                num = TheFolder.GetFiles().Length;
+                foreach (FileInfo NextFolder in TheFolder.GetFiles())
+                {
+                    string[] arrshow = NextFolder.Name.Substring(0, NextFolder.Name.Length - 4).Split('_');
+                    string show = "";
+                    string[] ipAddress = new string[arrshow.Length];
+                    int i = 0;
+                    foreach (string sh in arrshow)
                     {
-                        ChatInfo chatInfo = new ChatInfo(NextFolder.Name);
-                        AddChat(chatInfo);
+                        show += "201601" + sh + "，";
+                        ipAddress[i] = Search("201601" + sh);
+                        i = i + 1;
                     }
+                    show = show.Substring(0, show.Length - 1);
+                    ChatInfo chatInfo = new ChatInfo(user, show, ipAddress);
+                    AddChat(chatInfo);
+                }
+                while (true)
+                {
+                    DirectoryInfo WFolder = new DirectoryInfo("Data/Chat/");
+                    tmp = WFolder.GetFiles().Length;
+                    if (tmp != num)
+                    {
+                        this.Invoke(new Action(flowLayoutPanel1.Controls.Clear));
+                        foreach (FileInfo NextFolder in TheFolder.GetFiles())
+                        {
+                            string[] arrshow = NextFolder.Name.Substring(0, NextFolder.Name.Length-4).Split('_');
+                            string show = "";
+                            string[] ipAddress = new string[arrshow.Length];
+                            int i = 0;
+                            foreach (string sh in arrshow)
+                            {
+                                show +="201601"+sh + "，";
+                                ipAddress[i] = Search("201601" + sh);
+                                i = i + 1;
+                            }
+                            show = show.Substring(0, show.Length - 1);
+                            ChatInfo chatInfo = new ChatInfo(user,show, ipAddress);
+                            AddChat(chatInfo);
+                        }
+                        num = tmp;
+                    }
+                }
             });
             fresh = new Thread(new ThreadStart(Searchall));
             fresh.Start();
@@ -305,6 +347,7 @@ namespace QICQ
         {
             canStop = true;
             fresh.Abort();
+            msginfo.Abort();
             //tcpServer.Shutdown(SocketShutdown.Both);
             tcpServer.Close();
             Thread fThread = new Thread(new ThreadStart(Log_out));
