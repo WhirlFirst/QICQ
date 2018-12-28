@@ -58,7 +58,6 @@ namespace QICQ
             renew.SetApartmentState(ApartmentState.STA);
             renew.IsBackground = true;
             renew.Start();
-            //AsynRecive(sockets);//异步接收消息
         }
 
         public void ShowMsg_inRichTextBox(string str, Color color, HorizontalAlignment direction)
@@ -92,17 +91,24 @@ namespace QICQ
                             try
                             {
                                 if (!tcpClient.Connected) return;
-                                    length = tcpClient.EndReceive(asyncResult);
+                                length = tcpClient.EndReceive(asyncResult);
                                 if (length == 0)
                                 {
-                                    int connect_num = links.Length;
-                                    if(connect_num>1) MessageBox.Show("有好友退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    else MessageBox.Show("好友退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    if (this.IsHandleCreated)
+                                    if (conNum > 1)
                                     {
-                                        this.Invoke(new Action(this.Close));
+                                        MessageBox.Show("有好友退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        conNum = conNum - 1;
+                                        return;
                                     }
-                                    return;
+                                    else
+                                    {
+                                        MessageBox.Show("好友退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        if (this.IsHandleCreated)
+                                        {
+                                            this.Invoke(new Action(this.Close));
+                                        }
+                                        return;
+                                    }
                                 }
                                 Message msg = SerHelper.Deserialize<Message>(data);
                                 switch (msg.Type)
@@ -122,7 +128,8 @@ namespace QICQ
                                             foreach (Socket Client in sockets)
                                             {
                                                 if (Client == null) break;
-                                                AsynSend(Client, show_string);
+                                                if (Client == tcpClient) continue;
+                                                if (Client.Connected) AsynSend(Client, show_string);
                                             }
                                         }
                                         break;
@@ -215,7 +222,7 @@ namespace QICQ
                 foreach (Socket Client in sockets)
                 {
                     if (Client == null) break;
-                    AsynSend(Client, send_msg);
+                    if(Client.Connected)  AsynSend(Client, send_msg);
                 }
 
             }
@@ -329,13 +336,6 @@ namespace QICQ
                         while (true)
                         {
                             received = File_client.Receive(buffer, buffer_size, SocketFlags.None);
-                            string string_send = Encoding.UTF8.GetString(buffer, 0, received);
-                            foreach (Socket otherClient in sockets)
-                            {
-                                if (otherClient == null) break;
-                                if (otherClient != File_client)
-                                    AsynSend(otherClient, string_send);
-                            }
                             fs.Write(buffer, 0, received);
                             fs.Flush();
                             total += received;
@@ -345,6 +345,7 @@ namespace QICQ
                                 break;
                             }
                         }
+                        filefinsh = true;
                         this.Invoke(new Action(this.fileBar.Hide));
                         fs.Close();
                         MessageBox.Show(fileSavePath + "文件接收完毕", "信息提示");
@@ -352,24 +353,39 @@ namespace QICQ
                     else
                     {
                         //用户在保存文件对话框中没有选择文件，所以只转发
+                        string fileSavePath = "Data/Tmp/f1"+name;
                         int total = 0;
                         int received;
-                        int buffer_size = 1000000;
+                        int buffer_size = 1024 * 1024;
                         byte[] buffer = new byte[buffer_size];
+                        FileStream fs = new FileStream(fileSavePath, FileMode.Create, FileAccess.Write);
                         while (true)
                         {
                             received = File_client.Receive(buffer, buffer_size, SocketFlags.None);
-                            string string_send = Encoding.UTF8.GetString(buffer, 0, received);
-                            foreach (Socket otherClient in sockets)
-                            {
-                                if (otherClient == null) break;
-                                if (otherClient != File_client)
-                                    AsynSend(otherClient, string_send);
-                            }
+                            fs.Write(buffer, 0, received);
+                            fs.Flush();
                             total += received;
-                            if (received < buffer_size)
+                            if (total == len)
                             {
                                 break;
+                            }
+                        }
+                        filefinsh = true;
+                        fs.Close();
+                        string strOpenFileName = fileSavePath;//打开的文件的全限定名
+                        FileInfo fi = new FileInfo(strOpenFileName);
+                        byte[] data = SerHelper.Serialize(msg);
+                        foreach (Socket Client in sockets)
+                        {
+                            if (Client == null) break;
+                            if (Client == File_client) continue;
+                            if (!Client.Connected) continue;
+                            Client.Send(data);
+                            Client.BeginSendFile(strOpenFileName, null, null, TransmitFileOptions.UseDefaultWorkerThread, new AsyncCallback(sendfinish), null);
+
+                            void sendfinish(IAsyncResult iar)
+                            {
+                                Client.EndSendFile(iar);
                             }
                         }
                     }
@@ -377,28 +393,42 @@ namespace QICQ
                 else if (dr == DialogResult.Cancel)
                 {
                     //用户选择取消的操作，只转发
+                    string fileSavePath = "Data/Tmp/f1" + name;
                     int total = 0;
                     int received;
-                    int buffer_size = 100000;
+                    int buffer_size = 1024 * 1024;
                     byte[] buffer = new byte[buffer_size];
+                    FileStream fs = new FileStream(fileSavePath, FileMode.Create, FileAccess.Write);
                     while (true)
                     {
                         received = File_client.Receive(buffer, buffer_size, SocketFlags.None);
-                        string string_send = Encoding.UTF8.GetString(buffer, 0, received);
-                        foreach (Socket otherClient in sockets)
-                        {
-                            if (otherClient == null) break;
-                            if (otherClient != File_client)
-                                AsynSend(otherClient, string_send);
-                        }
+                        fs.Write(buffer, 0, received);
+                        fs.Flush();
                         total += received;
-                        if (received < buffer_size)
+                        if (total == len)
                         {
                             break;
                         }
                     }
+                    filefinsh = true;
+                    fs.Close();
+                    string strOpenFileName = fileSavePath;//打开的文件的全限定名
+                    FileInfo fi = new FileInfo(strOpenFileName);
+                    byte[] data = SerHelper.Serialize(msg);
+                    foreach (Socket Client in sockets)
+                    {
+                        if (Client == null) break;
+                        if (Client == File_client) continue;
+                        if (!Client.Connected) continue;
+                        Client.Send(data);
+                        Client.BeginSendFile(strOpenFileName, null, null, TransmitFileOptions.UseDefaultWorkerThread, new AsyncCallback(sendfinish), null);
+
+                        void sendfinish(IAsyncResult iar)
+                        {
+                            Client.EndSendFile(iar);
+                        }
+                    }
                 }
-                filefinsh = true;
                 return;
             });
             savefile.SetApartmentState(ApartmentState.STA);
@@ -415,7 +445,7 @@ namespace QICQ
                 openFileDialog1.Multiselect = false;
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
-                    String strOpenFileName = openFileDialog1.FileName;//打开的文件的全限定名
+                    string strOpenFileName = openFileDialog1.FileName;//打开的文件的全限定名
                     string post = strOpenFileName.Substring(strOpenFileName.Length - 4);
                     FileInfo fi = new FileInfo(strOpenFileName);
 

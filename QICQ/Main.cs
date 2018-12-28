@@ -35,6 +35,7 @@ namespace QICQ
         public delegate void AddItem(string[] z);
         public delegate void SetBgc(int x,int y, Color c);
         public delegate ListView.SelectedListViewItemCollection GetS();
+        public delegate void AddChatInfo(Control z);
 
 
 
@@ -154,6 +155,25 @@ namespace QICQ
             catch (Exception) { }
         }
 
+        private void AddChat(Control z)
+        {
+            try
+            {
+                if (this.userlist.InvokeRequired)
+                {
+                    AddChatInfo stcb = new AddChatInfo(AddChat);
+
+                    flowLayoutPanel1.BeginInvoke(stcb, new object[] { z });
+
+                }
+                else
+                {
+                    flowLayoutPanel1.Controls.Add(z);
+                }
+            }
+            catch (Exception) { }
+        }
+
         private void SetListColor(int x, int y, Color c)
         {
             try
@@ -195,7 +215,7 @@ namespace QICQ
             holo.Text = "你好！" + username;
 
             Directory.CreateDirectory("Data/Chat/");
-
+            Directory.CreateDirectory("Data/Tmp/");
             if (!File.Exists("Data/user.txt"))
             {
                 FileStream fs1 = new FileStream("Data/user.txt", FileMode.Create);
@@ -224,9 +244,21 @@ namespace QICQ
                 else item.SubItems[0].BackColor = Color.LightGray;
             }
             sr.Close();
-            tcpServer =  StartListening(tcpServer);
+            flowLayoutPanel1.WrapContents = false;
+                tcpServer =  StartListening(tcpServer);
+            Thread msginfo = new Thread(() =>
+            {
+                    DirectoryInfo TheFolder = new DirectoryInfo("Data/Chat/");
+                    //遍历文件夹
+                    foreach (FileInfo NextFolder in TheFolder.GetFiles())
+                    {
+                        ChatInfo chatInfo = new ChatInfo(NextFolder.Name);
+                        AddChat(chatInfo);
+                    }
+            });
             fresh = new Thread(new ThreadStart(Searchall));
             fresh.Start();
+            msginfo.Start();
         }
 
 
@@ -512,6 +544,12 @@ namespace QICQ
             Socket[] chatSocket= new Socket[1];
             foreach (ListViewItem item in userlist.SelectedItems)
             {
+                if (item.SubItems[0].Text.ToString() == username)
+                {
+                    MessageBox.Show("别和自己聊天了，多和别人聊聊吧", "无法发起会话"
+                                  , MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                };
                 if (item.SubItems[2].Text.ToString() == "OffLine")
                 {
                     MessageBox.Show("好友不在线", "无法发起会话"
@@ -656,7 +694,7 @@ namespace QICQ
                     string show = Users_Broadcast_Received.Replace('_', '，');
                     Task Thread_Chat = Task.Run(() =>
                     {
-                        Application.Run(new ChatDialog(username, Users_Broadcast_Received
+                        Application.Run(new ChatDialog(username, show
                                                            , Connect_received, 1));
                     }
                         );
@@ -738,7 +776,7 @@ namespace QICQ
                         }
                         catch (Exception)
                         {
-                            MessageBox.Show("未知错误，好友可能虚假在线", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            MessageBox.Show("未知错误，有好友可能虚假在线", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             return;
                         }
                     }
@@ -753,7 +791,6 @@ namespace QICQ
 
                     Thread Thread_Chat = new Thread(() =>
                     Application.Run(new ChatDialog(username, friends, Chatters, Number_Connected)));
-                    //Thread_Chat.SetApartmentState(System.Threading.ApartmentState.STA);
                     Thread_Chat.Start();
             }
 

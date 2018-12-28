@@ -56,6 +56,12 @@
     <Compile Include="ChatDialog.Designer.cs">
       <DependentUpon>ChatDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChatInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ChatInfo.Designer.cs">
+      <DependentUpon>ChatInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="login.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +80,9 @@
     <Compile Include="SerHelper.cs" />
     <EmbeddedResource Include="ChatDialog.resx">
       <DependentUpon>ChatDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChatInfo.resx">
+      <DependentUpon>ChatInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="login.resx">
       <DependentUpon>login.cs</DependentUpon>

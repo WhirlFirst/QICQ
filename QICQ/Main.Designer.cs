@@ -41,9 +41,11 @@
             this.ip = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.state = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.skinTabPage2 = new CCWin.SkinControl.SkinTabPage();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.button1 = new System.Windows.Forms.Button();
             this.skinTabControl1.SuspendLayout();
             this.skinTabPage1.SuspendLayout();
+            this.skinTabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // holo
@@ -163,7 +165,7 @@
             this.skinTabControl1.PageImagePosition = CCWin.SkinControl.SkinTabControl.ePageImagePosition.Left;
             this.skinTabControl1.PageNorml = null;
             this.skinTabControl1.PageNormlTxtColor = System.Drawing.Color.DimGray;
-            this.skinTabControl1.SelectedIndex = 0;
+            this.skinTabControl1.SelectedIndex = 1;
             this.skinTabControl1.Size = new System.Drawing.Size(262, 468);
             this.skinTabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.skinTabControl1.TabIndex = 7;
@@ -216,6 +218,7 @@
             // skinTabPage2
             // 
             this.skinTabPage2.BackColor = System.Drawing.Color.White;
+            this.skinTabPage2.Controls.Add(this.flowLayoutPanel1);
             this.skinTabPage2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.skinTabPage2.Location = new System.Drawing.Point(0, 36);
             this.skinTabPage2.Name = "skinTabPage2";
@@ -223,6 +226,17 @@
             this.skinTabPage2.TabIndex = 1;
             this.skinTabPage2.TabItemImage = null;
             this.skinTabPage2.Text = "消息列表";
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.AutoScroll = true;
+            this.flowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(262, 432);
+            this.flowLayoutPanel1.TabIndex = 0;
             // 
             // button1
             // 
@@ -256,6 +270,7 @@
             this.Load += new System.EventHandler(this.Main_Load);
             this.skinTabControl1.ResumeLayout(false);
             this.skinTabPage1.ResumeLayout(false);
+            this.skinTabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -276,5 +291,6 @@
         private System.Windows.Forms.ColumnHeader ip;
         private System.Windows.Forms.ColumnHeader state;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
     }
 }
