@@ -51,6 +51,19 @@ namespace QICQ
             pwd.Enabled = true;
             gif.Hide();
             ing.Hide();
+            usertext.Parent = pictureBox1;
+            Point p = new Point(58, 156);
+            usertext.Location = p;
+            pwdtext.Parent = pictureBox1;
+            Point pp = new Point(74, 186);
+            pwdtext.Location = pp;
+            closebtn.Parent = pictureBox1;
+            Point cp = new Point(381, 0);
+            closebtn.Location = cp;
+            username.Parent = pictureBox1;
+            pwd.Parent = pictureBox1;
+            QICQ.Parent = pictureBox1;
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -123,13 +136,14 @@ namespace QICQ
 
         private void lgbtn_MouseEnter(object sender, EventArgs e)
         {
-            lgbtn.FlatAppearance.BorderSize = 1;
-            lgbtn.BackColor = Color.White;
+            lgbtn.BackColor = Color.DodgerBlue;
+            lgbtn.ForeColor = Color.White;
         }
 
         private void lgbtn_MouseLeave(object sender, EventArgs e)
         {
-            lgbtn.FlatAppearance.BorderSize = 0;
+            lgbtn.BackColor = Color.White;
+            lgbtn.ForeColor = Color.Black;
         }
 
         private void Login_FormClosing(object sender, FormClosingEventArgs e)
@@ -138,6 +152,19 @@ namespace QICQ
             
         }
 
+        private void closebtn_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
 
+        private void closebtn_MouseEnter(object sender, EventArgs e)
+        {
+            closebtn.ForeColor = Color.Red;
+        }
+
+        private void closebtn_MouseLeave(object sender, EventArgs e)
+        {
+            closebtn.ForeColor = Color.White;
+        }
     }
 }

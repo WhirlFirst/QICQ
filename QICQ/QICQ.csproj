@@ -125,5 +125,14 @@
   <ItemGroup>
     <None Include="Properties\1_logo800x600.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bg.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bg %281%29.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\QQ.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

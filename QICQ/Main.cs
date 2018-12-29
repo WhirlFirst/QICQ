@@ -470,6 +470,12 @@ namespace QICQ
         {
             searchbtn.Enabled = false;
             string ID = searchtext.Text.ToString();
+            if (ID==username)
+            {
+                MessageBox.Show("别添加自己为好友啦", "查询错误", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                searchbtn.Enabled = true;
+                return;
+            }
             if (ID == "")
             {
                 MessageBox.Show("请输入要查询的学号", "查询错误", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
@@ -842,7 +848,12 @@ namespace QICQ
                     Application.Run(new ChatDialog(username, friends, Chatters, Number_Connected)));
                     Thread_Chat.Start();
             }
-
+            else
+            {
+                MessageBox.Show("请选择要发起群聊的好友", "无法发起会话"
+                                     , MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
     }
 }

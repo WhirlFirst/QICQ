@@ -38,6 +38,8 @@
             this.gif = new CCWin.SkinControl.GifBox();
             this.ing = new CCWin.SkinControl.SkinLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.closebtn = new System.Windows.Forms.Button();
+            this.QICQ = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -45,8 +47,10 @@
             // 
             this.lgbtn.BackColor = System.Drawing.Color.White;
             this.lgbtn.CausesValidation = false;
-            this.lgbtn.FlatAppearance.BorderColor = System.Drawing.SystemColors.AppWorkspace;
+            this.lgbtn.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.lgbtn.FlatAppearance.BorderSize = 0;
+            this.lgbtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DodgerBlue;
+            this.lgbtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.DodgerBlue;
             this.lgbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.lgbtn.Font = new System.Drawing.Font("宋体", 12F);
             this.lgbtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
@@ -63,26 +67,30 @@
             // usertext
             // 
             this.usertext.AutoSize = true;
-            this.usertext.Font = new System.Drawing.Font("宋体", 12F);
+            this.usertext.BackColor = System.Drawing.Color.Transparent;
+            this.usertext.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.usertext.ForeColor = System.Drawing.Color.White;
             this.usertext.Location = new System.Drawing.Point(58, 163);
             this.usertext.Name = "usertext";
-            this.usertext.Size = new System.Drawing.Size(64, 16);
+            this.usertext.Size = new System.Drawing.Size(68, 16);
             this.usertext.TabIndex = 1;
             this.usertext.Text = "用户名:";
             // 
             // pwdtext
             // 
             this.pwdtext.AutoSize = true;
-            this.pwdtext.Font = new System.Drawing.Font("宋体", 12F);
+            this.pwdtext.BackColor = System.Drawing.Color.Transparent;
+            this.pwdtext.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.pwdtext.ForeColor = System.Drawing.Color.White;
             this.pwdtext.Location = new System.Drawing.Point(74, 191);
             this.pwdtext.Name = "pwdtext";
-            this.pwdtext.Size = new System.Drawing.Size(48, 16);
+            this.pwdtext.Size = new System.Drawing.Size(51, 16);
             this.pwdtext.TabIndex = 2;
             this.pwdtext.Text = "密码:";
             // 
             // username
             // 
-            this.username.BackColor = System.Drawing.Color.Transparent;
+            this.username.BackColor = System.Drawing.Color.White;
             this.username.DownBack = null;
             this.username.Icon = null;
             this.username.IconIsButton = false;
@@ -118,6 +126,7 @@
             this.username.SkinTxt.WaterColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
             this.username.SkinTxt.WaterText = "";
             this.username.TabIndex = 3;
+            this.username.TabStop = true;
             this.username.Text = "2016011493";
             this.username.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.username.WaterColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
@@ -126,7 +135,7 @@
             // 
             // pwd
             // 
-            this.pwd.BackColor = System.Drawing.Color.Transparent;
+            this.pwd.BackColor = System.Drawing.Color.White;
             this.pwd.DownBack = null;
             this.pwd.Icon = null;
             this.pwd.IconIsButton = false;
@@ -163,6 +172,7 @@
             this.pwd.SkinTxt.WaterColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
             this.pwd.SkinTxt.WaterText = "";
             this.pwd.TabIndex = 4;
+            this.pwd.TabStop = true;
             this.pwd.Text = "net2018";
             this.pwd.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.pwd.WaterColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
@@ -209,18 +219,51 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(0, 37);
+            this.pictureBox1.Location = new System.Drawing.Point(0, 1);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(416, 170);
+            this.pictureBox1.Size = new System.Drawing.Size(416, 206);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 8;
             this.pictureBox1.TabStop = false;
+            // 
+            // closebtn
+            // 
+            this.closebtn.BackColor = System.Drawing.Color.Transparent;
+            this.closebtn.FlatAppearance.BorderColor = System.Drawing.Color.DodgerBlue;
+            this.closebtn.FlatAppearance.BorderSize = 0;
+            this.closebtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Crimson;
+            this.closebtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Crimson;
+            this.closebtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.closebtn.Font = new System.Drawing.Font("Times New Roman", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.closebtn.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.closebtn.Location = new System.Drawing.Point(381, 1);
+            this.closebtn.Name = "closebtn";
+            this.closebtn.Size = new System.Drawing.Size(35, 27);
+            this.closebtn.TabIndex = 9;
+            this.closebtn.Text = "X";
+            this.closebtn.UseVisualStyleBackColor = false;
+            this.closebtn.Click += new System.EventHandler(this.closebtn_Click);
+            // 
+            // QICQ
+            // 
+            this.QICQ.AutoSize = true;
+            this.QICQ.BackColor = System.Drawing.Color.Transparent;
+            this.QICQ.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.QICQ.Font = new System.Drawing.Font("宋体", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.QICQ.ForeColor = System.Drawing.Color.White;
+            this.QICQ.Location = new System.Drawing.Point(138, 57);
+            this.QICQ.Name = "QICQ";
+            this.QICQ.Size = new System.Drawing.Size(160, 64);
+            this.QICQ.TabIndex = 10;
+            this.QICQ.Text = "QICQ";
             // 
             // Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(416, 293);
+            this.Controls.Add(this.QICQ);
+            this.Controls.Add(this.closebtn);
             this.Controls.Add(this.username);
             this.Controls.Add(this.ing);
             this.Controls.Add(this.pd);
@@ -256,6 +299,8 @@
         private CCWin.SkinControl.GifBox gif;
         private CCWin.SkinControl.SkinLabel ing;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button closebtn;
+        private System.Windows.Forms.Label QICQ;
     }
 }
 

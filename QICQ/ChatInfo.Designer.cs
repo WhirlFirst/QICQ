@@ -46,6 +46,7 @@
             // 
             // openbtn
             // 
+            this.openbtn.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.openbtn.FlatAppearance.BorderSize = 0;
             this.openbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.openbtn.Location = new System.Drawing.Point(0, 48);

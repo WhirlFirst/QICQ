@@ -32,21 +32,21 @@
             this.sendbtn = new System.Windows.Forms.Button();
             this.recivebox = new CCWin.SkinControl.SkinChatRichTextBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolFace = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.findlabel = new System.Windows.Forms.ToolStripLabel();
+            this.findtxt = new System.Windows.Forms.ToolStripTextBox();
+            this.findbtn = new System.Windows.Forms.ToolStripButton();
             this.sendbox = new CCWin.SkinControl.SkinChatRichTextBox();
             this.filebtn = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.fileBar = new CCWin.SkinControl.SkinProgressBar();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.findtxt = new System.Windows.Forms.ToolStripTextBox();
-            this.findbtn = new System.Windows.Forms.ToolStripButton();
-            this.findlabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // sendbtn
             // 
+            this.sendbtn.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.sendbtn.FlatAppearance.BorderSize = 0;
             this.sendbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.sendbtn.Location = new System.Drawing.Point(598, 421);
@@ -75,7 +75,6 @@
             this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolFace,
             this.toolStripSeparator1,
             this.findlabel,
             this.findtxt,
@@ -86,15 +85,32 @@
             this.toolStrip1.TabIndex = 14;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // toolFace
+            // toolStripSeparator1
             // 
-            this.toolFace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolFace.Image = ((System.Drawing.Image)(resources.GetObject("toolFace.Image")));
-            this.toolFace.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolFace.Name = "toolFace";
-            this.toolFace.Size = new System.Drawing.Size(23, 22);
-            this.toolFace.Text = "表情";
-            this.toolFace.Click += new System.EventHandler(this.toolFace_Click);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // findlabel
+            // 
+            this.findlabel.Name = "findlabel";
+            this.findlabel.Size = new System.Drawing.Size(92, 22);
+            this.findlabel.Text = "查找聊天内容：";
+            // 
+            // findtxt
+            // 
+            this.findtxt.Name = "findtxt";
+            this.findtxt.Size = new System.Drawing.Size(100, 25);
+            this.findtxt.TextChanged += new System.EventHandler(this.findtxt_TextChanged);
+            // 
+            // findbtn
+            // 
+            this.findbtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.findbtn.Image = global::QICQ.Properties.Resources.search;
+            this.findbtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.findbtn.Name = "findbtn";
+            this.findbtn.Size = new System.Drawing.Size(23, 22);
+            this.findbtn.Text = "toolStripButton2";
+            this.findbtn.Click += new System.EventHandler(this.findbtn_Click);
             // 
             // sendbox
             // 
@@ -109,6 +125,7 @@
             // 
             // filebtn
             // 
+            this.filebtn.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.filebtn.FlatAppearance.BorderSize = 0;
             this.filebtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.filebtn.Location = new System.Drawing.Point(503, 421);
@@ -137,33 +154,6 @@
             this.fileBar.TabIndex = 17;
             this.fileBar.Visible = false;
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // findtxt
-            // 
-            this.findtxt.Name = "findtxt";
-            this.findtxt.Size = new System.Drawing.Size(100, 25);
-            this.findtxt.TextChanged += new System.EventHandler(this.findtxt_TextChanged);
-            // 
-            // findbtn
-            // 
-            this.findbtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.findbtn.Image = global::QICQ.Properties.Resources.search;
-            this.findbtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.findbtn.Name = "findbtn";
-            this.findbtn.Size = new System.Drawing.Size(23, 22);
-            this.findbtn.Text = "toolStripButton2";
-            this.findbtn.Click += new System.EventHandler(this.findbtn_Click);
-            // 
-            // findlabel
-            // 
-            this.findlabel.Name = "findlabel";
-            this.findlabel.Size = new System.Drawing.Size(92, 22);
-            this.findlabel.Text = "查找聊天内容：";
-            // 
             // ChatDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -190,7 +180,6 @@
         private System.Windows.Forms.Button sendbtn;
         private CCWin.SkinControl.SkinChatRichTextBox recivebox;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton toolFace;
         private CCWin.SkinControl.SkinChatRichTextBox sendbox;
         private System.Windows.Forms.Button filebtn;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;

@@ -104,21 +104,6 @@ namespace QICQ
                                 length = tcpClient.EndReceive(asyncResult);
                                 if (length == 0)
                                 {
-                                    //if (conNum > 1)
-                                    //{
-                                    //    MessageBox.Show("有好友退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    //    conNum = conNum - 1;
-                                    //    return;
-                                    //}
-                                    //else
-                                    //{
-                                    //    MessageBox.Show("好友退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    //    if (this.IsHandleCreated)
-                                    //    {
-                                    //        this.Invoke(new Action(this.Close));
-                                    //    }
-                                    //    return;
-                                    //}
                                     return;
                                 }
                                 Message msg = SerHelper.Deserialize<Message>(data);
@@ -153,11 +138,11 @@ namespace QICQ
                                         break;
                                     case Message.EType.lgo:
                                         MessageBox.Show("好友"+msg.MsgBody+"退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        if (conNum > 1)
+                                        if ((conNum > 1)&&(msg.Length==0))
                                         {
                                             conNum = conNum - 1;
                                         }
-                                        else
+                                        else 
                                         {
                                             this.Invoke(new Action(this.Close));
                                             return;
@@ -180,8 +165,8 @@ namespace QICQ
                             }
                             catch (Exception ex)
                             {
-                               // MessageBox.Show(this,ex.ToString(), "出现异常",
-                                         //   MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show(this, ex.ToString(), "出现异常",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
 
                         }, null);
@@ -252,6 +237,7 @@ namespace QICQ
                 RichBox_Show rb_s = new RichBox_Show(ShowMsg_inRichTextBox);
                 string show_string = DateTime.Now.ToString()
                                             + "\n"+userID+"说：\n" + send_msg + "\n";
+                this.Invoke(rb_s, new object[] { "\n", Color.Blue, HorizontalAlignment.Right });
                 this.Invoke(rb_s, new object[] { show_string, Color.Blue, HorizontalAlignment.Right });
                 richTextBox_show_writing = false;  //恢复不被占用
                 sendbox.Text = "";
@@ -283,7 +269,8 @@ namespace QICQ
                 msg = new Message
                 {
                     Type = Message.EType.lgo,
-                    MsgBody = "群主"+userID
+                    MsgBody = "群主" + userID,
+                    Length = 1
                 };
             }
             else
@@ -291,7 +278,8 @@ namespace QICQ
                 msg = new Message
                 {
                     Type = Message.EType.lgo,
-                    MsgBody = userID
+                    MsgBody = userID,
+                    Length=0
                 };
             }
             foreach (Socket Client in sockets)
@@ -397,7 +385,7 @@ namespace QICQ
                     saveFileDialog1.Filter = "文件类型" + name + "|*" + name;
                     if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                     {
-                        string fileSavePath = saveFileDialog1.FileName+name;//获得用户保存文件的路径
+                        string fileSavePath = saveFileDialog1.FileName;//获得用户保存文件的路径
                         int total = 0;
                         int received;
                         int buffer_size = 1024*1024;
@@ -579,16 +567,6 @@ namespace QICQ
             this.fileBar.Update();
         }
 
-        private void toolFace_Click(object sender, EventArgs e)
-        {
-            Bitmap bmp = new Bitmap("E:\\THU\\QICQ\\gif\\hj.gif");
-            this.sendbox.InsertImage(bmp, this.sendbox.TextLength);
-            this.sendbox.Focus();
-            this.sendbox.ScrollToCaret();
-            string rtf = sendbox.Rtf;
-            recivebox.AppendRtf(rtf);
-            return;
-        }
 
         private void findbtn_Click(object sender, EventArgs e)
         {
