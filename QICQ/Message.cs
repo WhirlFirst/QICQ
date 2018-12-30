@@ -39,17 +39,17 @@ namespace QICQ
             /// </summary>
             msg,
             /// <summary>
-            /// 动图
+            /// 语音消息
             /// </summary>
-            gif,
+            voice,
             /// <summary>
             /// 客户端文件
             /// </summary>
             file,
             /// <summary>
-            /// 闪屏
+            /// 抖动
             /// </summary>
-            sp,
+            dd,
             /// <summary>
             /// 连接
             /// </summary>

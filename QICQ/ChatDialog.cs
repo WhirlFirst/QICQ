@@ -17,11 +17,17 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;//命名空间
 using CCWin.SkinControl;
+using System.Runtime.InteropServices;
+
 
 namespace QICQ
 {
+
     public partial class ChatDialog : Skin_DevExpress
     {
+        [DllImport("winmm.dll")]
+        public static extern int mciSendString(string lpstrCommand, string lpstrReturnString, int uReturnLength, int hwndCallback);
+
         string userID;
         string friends;
         string save = "";
@@ -29,6 +35,9 @@ namespace QICQ
         int conNum;
         int start = 0;
         int count = 0;
+        int times = 0;
+        int recordflag = 0;
+        int playflag = 0;
         bool richTextBox_show_writing = false;
         Thread renew;
         private volatile bool canStop = false;
@@ -39,6 +48,7 @@ namespace QICQ
         private delegate GifBox Paste(Image image,int p);
         private delegate void receive_save(Socket File_client, Message msg);
         private delegate void Socket_close(Socket File_client);
+        private delegate void Shakeshake();
         public ChatDialog()
         {
             InitializeComponent();
@@ -158,6 +168,16 @@ namespace QICQ
                                                 if (Client.Connected) AsynSend(Client, msg);
                                             }
                                         }
+                                        break;
+                                    case Message.EType.dd:
+                                        Shakeshake shakeshake = new Shakeshake(Shake);
+                                        this.Invoke(shakeshake);
+                                        break;
+                                    case Message.EType.voice:
+                                        receive_save r_v = new receive_save(ReceiveVoice);
+                                        this.Invoke(r_v, new object[] { tcpClient, msg });
+                                        while (!filefinsh) { }
+                                        filefinsh = false;
                                         break;
 
                                 }
@@ -628,6 +648,183 @@ namespace QICQ
         {
             start = 0;
             count = 0;
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            if (recordflag == 0)
+            {
+                mciSendString("set wave bitpersample 8", "", 0, 0);  //设为8位
+                mciSendString("set wave samplespersec 11025", "", 0, 0);//设置每个声道播放和记录时的样本频率为20Hz-20000Hz
+                mciSendString("set wave channels 2", "", 0, 0);  //设为立体声
+                mciSendString("set wave format tag pcm", "", 0, 0);//设置PCM（脉冲编码调制）
+                mciSendString("open new type WAVEAudio alias movie", "", 0, 0); //打开一个新的录音文件
+                mciSendString("record movie", "", 0, 0);  //开始录音
+                recordflag = 1;
+            }
+            else
+            {
+                File.Delete("Data/" + userID + "/Tmp/"+ "recordvoice.wav");
+                mciSendString("stop movie", "", 0, 0);//停止录音
+                mciSendString("save movie" + " " + "Data/" + userID + "/Tmp/"+"recordvoice.wav", "", 0, 0);//保存录音文件，recordvoice.wav为录音文件
+                mciSendString("close movie", "", 0, 0);   //关闭录音
+                recordflag = 0;
+                FileInfo fi = new FileInfo("Data/" + userID + "/Tmp/" + "recordvoice.wav");
+                try
+                {
+                    Message msg = new Message
+                    {
+                        Type = Message.EType.voice,
+                        Length=fi.Length
+                    };
+                    byte[] data = SerHelper.Serialize(msg);
+                    foreach (Socket Client in sockets)
+                    {
+                        if (Client == null) break;
+                        Client.Send(data);
+                        Thread.Sleep(100);
+                        Client.BeginSendFile("Data/" + userID + "/Tmp/" + "recordvoice.wav", null, null, TransmitFileOptions.UseDefaultWorkerThread, new AsyncCallback(sendfinish), null);
+
+                        void sendfinish(IAsyncResult iar)
+                        {
+                            Client.EndSendFile(iar);
+                            MessageBox.Show("语音消息发送成功", "信息提示");
+                        }
+                    }
+
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("好友已关闭会话，不能发送语音", "出错啦。。。",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            string audiofile = "Data/" + userID + "/Tmp/recive.wav";//音频文件路径
+            string CommandString = "open " + "\"" + audiofile + "\"" + " alias Mp3File";
+            mciSendString(CommandString, null, 0, 0);
+            CommandString = "set Mp3File time format ms";
+            mciSendString(CommandString, null, 0, 0);
+            CommandString = "seek Mp3File to 0";
+            mciSendString(CommandString, null, 0, 0);
+            CommandString = "play Mp3File";
+            mciSendString(CommandString, null, 0, 0);
+            playflag = 1;
+        }
+
+        private void Shake()
+        {
+            times = 0;
+            timer1.Start();
+        }
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            int count1 = times % 4;
+            if (count1 < 2)
+            {
+                Point new_loc = new Point(this.Location.X - 5, this.Location.Y - 5);
+                this.Location = new_loc;
+                times++;
+            }
+            else if (count1 < 4)
+            {
+                Point new_loc = new Point(this.Location.X + 5, this.Location.Y + 5);
+                this.Location = new_loc;
+                times++;
+            }
+            else if (count1 < 6)
+            {
+                Point new_loc = new Point(this.Location.X + 5, this.Location.Y - 5);
+                this.Location = new_loc;
+                times++;
+            }
+            else if (count1 < 8)
+            {
+                Point new_loc = new Point(this.Location.X - 5, this.Location.Y + 5);
+                this.Location = new_loc;
+                times++;
+            }
+            if (times == 30)
+                timer1.Stop();
+        }
+
+        private void shakebtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Message msg = new Message
+                {
+                    Type = Message.EType.dd,
+                };
+                foreach (Socket Client in sockets)
+                {
+                    if (Client == null) break;
+                    if (Client.Connected) AsynSend(Client, msg);
+                }
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("好友已关闭会话，不能发送信息", "出错啦。。。",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public void ReceiveVoice(Socket File_client, Message msg)
+        {
+            if (playflag == 1)
+            {
+                mciSendString("close Mp3File", null, 0, 0);
+                playflag = 0;
+            }
+            Thread savevoice = new Thread(() =>
+            {
+                File.Delete("Data/" + userID + "/Tmp/recive.wav");
+                long len = msg.Length;
+                    string fileSavePath = "Data/" + userID + "/Tmp/recive.wav";
+                    int total = 0;
+                    int received;
+                    int buffer_size = 1024 * 1024;
+                    byte[] buffer = new byte[buffer_size];
+                FileStream fs = new FileStream(fileSavePath, FileMode.Create, FileAccess.Write);
+                    while (true)
+                    {
+                        received = File_client.Receive(buffer, buffer_size, SocketFlags.None);
+                        fs.Write(buffer, 0, received);
+                        fs.Flush();
+                        total += received;
+                        if (total == len)
+                        {
+                            break;
+                        }
+                    }
+                    filefinsh = true;
+                    fs.Close();
+                string strOpenFileName = fileSavePath;//打开的文件的全限定名
+                    FileInfo fi = new FileInfo(strOpenFileName);
+                    byte[] data = SerHelper.Serialize(msg);
+                    foreach (Socket Client in sockets)
+                    {
+                        if (Client == null) break;
+                        if (Client == File_client) continue;
+                        if (!Client.Connected) continue;
+                        Client.Send(data);
+                        Thread.Sleep(100);
+                        Client.BeginSendFile(strOpenFileName, null, null, TransmitFileOptions.UseDefaultWorkerThread, new AsyncCallback(sendfinish), null);
+
+                        void sendfinish(IAsyncResult iar)
+                        {
+                            Client.EndSendFile(iar);
+                        }
+                    }
+                MessageBox.Show("您收到了一条语音消息！", "信息提示");
+                return;
+            });
+            savevoice.Start();
+            return;
         }
     }
 }
