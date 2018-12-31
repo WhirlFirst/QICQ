@@ -39,6 +39,7 @@ namespace QICQ
         int recordflag = 0;
         int playflag = 0;
         bool richTextBox_show_writing = false;
+        List<string> connected;
         Thread renew;
         private volatile bool canStop = false;
         private volatile bool filefinsh = false;
@@ -53,9 +54,10 @@ namespace QICQ
         {
             InitializeComponent();
         }
-        public ChatDialog(string user,string chatters, Socket[] tsockets,int num)
+        public ChatDialog(string user,string chatters, Socket[] tsockets,int num, List<string> cc)
         {
             InitializeComponent();
+            connected = cc;
             this.Text = "与" + chatters + "的聊天";
             userID = user;
             friends = chatters;
@@ -172,6 +174,15 @@ namespace QICQ
                                     case Message.EType.dd:
                                         Shakeshake shakeshake = new Shakeshake(Shake);
                                         this.Invoke(shakeshake);
+                                        if (sockets.Length > 1)
+                                        {
+                                            foreach (Socket Client in sockets)
+                                            {
+                                                if (Client == null) break;
+                                                if (Client == tcpClient) continue;
+                                                if (Client.Connected) AsynSend(Client, msg);
+                                            }
+                                        }
                                         break;
                                     case Message.EType.voice:
                                         receive_save r_v = new receive_save(ReceiveVoice);
@@ -322,6 +333,11 @@ namespace QICQ
                                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }, null);
+            }
+            string[] savename = friends.Split('，');
+            foreach(string a in savename)
+            {
+                connected.Remove(a);
             }
             canStop = true;
             ShowMsg_inRichTextBox("\n", Color.LightSkyBlue, HorizontalAlignment.Center);
@@ -529,6 +545,34 @@ namespace QICQ
                         }
                     }
                 }
+                try
+                {
+                    //如果当前写字框没有被占用
+                    while (richTextBox_show_writing) { };
+                    //等到其他线程解除了写字框的占用
+                    richTextBox_show_writing = true;   //占用之
+                    string send_msg = "我收到文件了！";
+                    string show_string = DateTime.Now.ToString()
+                                                + "\n" + userID + "说：\n" + send_msg + "\n";
+                    richTextBox_show_writing = false;  //恢复不被占用
+                    sendbox.Text = "";
+                    send_msg = DateTime.Now.ToString() + "\n" + userID + "说：\n" + send_msg + "\n";
+                    Message finishmsg = new Message
+                    {
+                        Type = Message.EType.msg,
+                        MsgBody = send_msg,
+                    };
+                    foreach (Socket Client in sockets)
+                    {
+                        if (Client == null) break;
+                        if (Client.Connected) AsynSend(Client, finishmsg);
+                    }
+
+                }
+                catch (Exception)
+                {
+                    
+                }
                 return;
             });
             savefile.SetApartmentState(ApartmentState.STA);
@@ -568,7 +612,7 @@ namespace QICQ
                             Client.EndSendFile(iar);
                         }
                     }
-                    MessageBox.Show(strOpenFileName + "文件传输成功", "信息提示");
+                    MessageBox.Show(strOpenFileName + "文件传输成功,为了保证文件顺利传输，请在看到对面回复文件接收成功后再发送其他消息！", "信息提示");
                 }
                 else
                 {
@@ -661,6 +705,7 @@ namespace QICQ
                 mciSendString("open new type WAVEAudio alias movie", "", 0, 0); //打开一个新的录音文件
                 mciSendString("record movie", "", 0, 0);  //开始录音
                 recordflag = 1;
+                toolStripButton1.Image = Properties.Resources.yying;
             }
             else
             {
@@ -668,6 +713,7 @@ namespace QICQ
                 mciSendString("stop movie", "", 0, 0);//停止录音
                 mciSendString("save movie" + " " + "Data/" + userID + "/Tmp/"+"recordvoice.wav", "", 0, 0);//保存录音文件，recordvoice.wav为录音文件
                 mciSendString("close movie", "", 0, 0);   //关闭录音
+                toolStripButton1.Image = Properties.Resources.yy;
                 recordflag = 0;
                 FileInfo fi = new FileInfo("Data/" + userID + "/Tmp/" + "recordvoice.wav");
                 try
@@ -675,6 +721,7 @@ namespace QICQ
                     Message msg = new Message
                     {
                         Type = Message.EType.voice,
+                        MsgBody=userID,
                         Length=fi.Length
                     };
                     byte[] data = SerHelper.Serialize(msg);
@@ -812,7 +859,7 @@ namespace QICQ
                         if (Client == File_client) continue;
                         if (!Client.Connected) continue;
                         Client.Send(data);
-                        Thread.Sleep(100);
+                        Thread.Sleep(500);
                         Client.BeginSendFile(strOpenFileName, null, null, TransmitFileOptions.UseDefaultWorkerThread, new AsyncCallback(sendfinish), null);
 
                         void sendfinish(IAsyncResult iar)
@@ -820,7 +867,7 @@ namespace QICQ
                             Client.EndSendFile(iar);
                         }
                     }
-                MessageBox.Show("您收到了一条语音消息！", "信息提示");
+                MessageBox.Show("好友"+msg.MsgBody+ "向您发送了语音消息！", "信息提示");
                 return;
             });
             savevoice.Start();

@@ -134,5 +134,20 @@
   <ItemGroup>
     <None Include="Resources\QQ.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dd.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\play.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\yuyin.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\yy.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\yying.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

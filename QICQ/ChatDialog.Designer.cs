@@ -37,16 +37,17 @@
             this.findlabel = new System.Windows.Forms.ToolStripLabel();
             this.findtxt = new System.Windows.Forms.ToolStripTextBox();
             this.findbtn = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.shakebtn = new System.Windows.Forms.ToolStripButton();
             this.sendbox = new CCWin.SkinControl.SkinChatRichTextBox();
             this.filebtn = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.fileBar = new CCWin.SkinControl.SkinProgressBar();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.shakebtn = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,6 +86,7 @@
             this.findlabel,
             this.findtxt,
             this.findbtn,
+            this.toolStripSeparator3,
             this.toolStripButton1,
             this.toolStripButton2,
             this.toolStripSeparator2,
@@ -122,25 +124,48 @@
             this.findbtn.Text = "toolStripButton2";
             this.findbtn.Click += new System.EventHandler(this.findbtn_Click);
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
             // toolStripButton1
             // 
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.Image = global::QICQ.Properties.Resources.yy;
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton1.Text = "toolStripButton1";
+            this.toolStripButton1.ToolTipText = "录制语音消息";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripButton2
             // 
             this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.Image = global::QICQ.Properties.Resources.play;
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
             this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton2.Text = "toolStripButton2";
+            this.toolStripButton2.ToolTipText = "播放语音消息";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // shakebtn
+            // 
+            this.shakebtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.shakebtn.Image = global::QICQ.Properties.Resources.dd;
+            this.shakebtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.shakebtn.Name = "shakebtn";
+            this.shakebtn.Size = new System.Drawing.Size(23, 22);
+            this.shakebtn.Text = "toolStripButton3";
+            this.shakebtn.ToolTipText = "窗口抖动";
+            this.shakebtn.Click += new System.EventHandler(this.shakebtn_Click);
             // 
             // sendbox
             // 
@@ -188,21 +213,6 @@
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
-            // shakebtn
-            // 
-            this.shakebtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.shakebtn.Image = ((System.Drawing.Image)(resources.GetObject("shakebtn.Image")));
-            this.shakebtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.shakebtn.Name = "shakebtn";
-            this.shakebtn.Size = new System.Drawing.Size(23, 22);
-            this.shakebtn.Text = "toolStripButton3";
-            this.shakebtn.Click += new System.EventHandler(this.shakebtn_Click);
-            // 
             // ChatDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -243,5 +253,6 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton shakebtn;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }

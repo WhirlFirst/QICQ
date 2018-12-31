@@ -20,12 +20,21 @@ namespace QICQ
         string user;
         public string[] IP;
         Socket Socket_user_server;
+        List<string> connected;
+        delegate void Dowork();
+        public void Able()
+        {
+            this.openbtn.Enabled = true;
+            delbtn.Enabled = true;
+            openbtn.Text = "打开";
+        }
         public ChatInfo()
         {
             InitializeComponent();
         }
-        public ChatInfo(string username, string mem,string[] ip,Socket server)
+        public ChatInfo(string username, string mem,string[] ip,Socket server,List<string> vs)
         {
+            connected = vs;
             member = mem;
             IP = ip;
             user = username;
@@ -96,6 +105,9 @@ namespace QICQ
 
         public void openbtn_Click(object sender, EventArgs e)
         {
+            openbtn.Enabled = false;
+            delbtn.Enabled = false;
+            openbtn.Text = "连接中";
             int Number_Connected = 0;
             string Users_Broadcast_Msg;
             string[] friends = member.Split('，');
@@ -109,41 +121,64 @@ namespace QICQ
                     {
                         MessageBox.Show("要发起会话的好友有人不在线", "无法发起会话"
                                      , MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Dowork dowork = new Dowork(Able);
+                        this.Invoke(dowork);
                         return;
                     }
                 }
                 i = i + 1;
             }
             string[] memarr = member.Split('，');
+            foreach(string a in memarr)
+            {
+               foreach(string b in connected)
+                {
+                    if (b == a)
+                    {
+                        MessageBox.Show("已经在聊天了", "无法发起会话"
+                                     , MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Able();
+                        return;
+                    }
+                }
+                connected.Add(a);
+            }
             Socket[] Chatters = new Socket[IP.Length];
             //向所有选中的人广播除了它自己外其他人的ID
-            i = 0;
-            foreach (string ip in IP)
+            Task Thread_Chat = Task.Run(() =>
+             {
+                 i = 0;
+                 foreach (string ip in IP)
+                 {
+                    //广播信息的第一条ID是自己的ID，ID与ID之间是连续的，通过/来分割
+                    Users_Broadcast_Msg = user;
+                     int j = 0;
+                     foreach (string iitem in memarr)
+                     {
+                         if (i != j) Users_Broadcast_Msg += "_" + iitem;
+                         j += 1;
+                     }
+                     try
+                     {
+                         Chatters[Number_Connected] = Connect_GroupChat(
+                         ip, memarr[i], Users_Broadcast_Msg);
+                         Number_Connected++;
+                     }
+                     catch (Exception)
+                     {
+                         MessageBox.Show("未知错误，有好友可能虚假在线", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                         Dowork dowork = new Dowork(Able);
+                         this.Invoke(dowork);
+                         return;
+                     }
+                     i += 1;
+                 }
+                 Application.Run(new ChatDialog(user, member, Chatters, Number_Connected, connected));
+             });
+            Thread_Chat.GetAwaiter().OnCompleted(() =>
             {
-                //广播信息的第一条ID是自己的ID，ID与ID之间是连续的，通过/来分割
-                Users_Broadcast_Msg = user;
-                int j = 0;
-                foreach (string iitem in memarr)
-                {
-                    if (i!=j) Users_Broadcast_Msg += "_" + iitem;
-                    j += 1;
-                }
-                try
-                {
-                    Chatters[Number_Connected] = Connect_GroupChat(
-                    ip, memarr[i], Users_Broadcast_Msg);
-                    Number_Connected++;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("未知错误，有好友可能虚假在线", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return;
-                }
-                i += 1;
-            }
-            Thread Thread_Chat = new Thread(() =>
-            Application.Run(new ChatDialog(user, member, Chatters, Number_Connected)));
-            Thread_Chat.Start();
+                Able();
+            });
         }
     }
 }

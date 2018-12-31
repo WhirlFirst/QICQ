@@ -28,7 +28,7 @@ namespace QICQ
         IPAddress Server = IPAddress.Parse("166.111.140.14");
         IPAddress local_ip;
         Login login;
-        bool s_state;
+        public List<string> connected = new List<string> { };
         private volatile bool canStop = false;
         public delegate int GetValueForChannelNoCallBack();
         public delegate string GetItem(int x,int y);
@@ -269,7 +269,7 @@ namespace QICQ
                         i = i + 1;
                     }
                     show = show.Substring(0, show.Length - 1);
-                    ChatInfo chatInfo = new ChatInfo(user, show, ipAddress,Socket_user_server);
+                    ChatInfo chatInfo = new ChatInfo(user, show, ipAddress,Socket_user_server,connected);
                     AddChat(chatInfo);
                 }
                 while (true)
@@ -292,7 +292,7 @@ namespace QICQ
                                 i = i + 1;
                             }
                             show = show.Substring(0, show.Length - 1);
-                            ChatInfo chatInfo = new ChatInfo(user,show, ipAddress,Socket_user_server);
+                            ChatInfo chatInfo = new ChatInfo(user,show, ipAddress,Socket_user_server,connected);
                             AddChat(chatInfo);
                         }
                         num = tmp;
@@ -373,7 +373,6 @@ namespace QICQ
 
         public string Search(string IDnumber)
         {
-            s_state = true;
             string IP_search = "q" + IDnumber;//向服务器发送的查询信息
             byte[] IP_search_byte = new byte[1024];
             IP_search_byte = Encoding.ASCII.GetBytes(IP_search);
@@ -384,7 +383,6 @@ namespace QICQ
             catch (Exception)
             {
                 MessageBox.Show("未知错误，无法连接服务器或者其他", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                s_state = false;
                 return ("");
             }
 
@@ -397,7 +395,6 @@ namespace QICQ
 
         public string NSearch(string IDnumber)
         {
-            s_state = true;
             string IP_search = "q" + IDnumber;//向服务器发送的查询信息
             byte[] IP_search_byte = new byte[1024];
             IP_search_byte = Encoding.ASCII.GetBytes(IP_search);
@@ -408,7 +405,6 @@ namespace QICQ
             catch (Exception)
             {
                 MessageBox.Show("未知错误，无法连接服务器或者其他", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                s_state = false;
                 return ("");
             }
 
@@ -594,6 +590,21 @@ namespace QICQ
             Socket[] chatSocket= new Socket[1];
             foreach (ListViewItem item in userlist.SelectedItems)
             {
+                foreach (string a in connected)
+                {
+                    if (item.SubItems[0].Text.ToString() == a)
+                    {
+                        MessageBox.Show("已经在聊天了", "无法发起会话"
+                                  , MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                if (item.SubItems[2].Text.ToString() == "Connecting")
+                {
+                    MessageBox.Show("你应该已经和Ta在聊天了", "无法发起会话"
+                                  , MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
                 if (item.SubItems[0].Text.ToString() == username)
                 {
                     MessageBox.Show("别和自己聊天了，多和别人聊聊吧", "无法发起会话"
@@ -609,6 +620,7 @@ namespace QICQ
                 string ID = item.SubItems[0].Text.ToString();
                 string IP = item.SubItems[1].Text.ToString();
                 int num = item.Index;
+                connected.Add(ID);
                 Task Thread_Chat = Task.Run(() =>
                 Newwindow(ID, IP,num));
                 item.SubItems[2].Text = "Connecting";
@@ -645,7 +657,7 @@ namespace QICQ
                     return;
                 }
                 string friends = ID;
-                Application.Run(new ChatDialog(username, friends, chatSocket, 1));
+                Application.Run(new ChatDialog(username, friends, chatSocket, 1,connected));
             }
         }
 
@@ -745,10 +757,15 @@ namespace QICQ
                     Socket[] Connect_received = new Socket[1];
                     Connect_received[0] = tcpClient;
                     string show = Users_Broadcast_Received.Replace('_', '，');
+                    string[] names = show.Split('，');
+                    foreach(string a in names)
+                    {
+                        connected.Add(a);
+                    }
                     Task Thread_Chat = Task.Run(() =>
                     {
                         Application.Run(new ChatDialog(username, show
-                                                           , Connect_received, (int)msg.Length));
+                                                           , Connect_received, (int)msg.Length,connected));
                     }
                         );
                     
@@ -808,6 +825,22 @@ namespace QICQ
                                       , MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     };
+
+                        if (iitem.SubItems[2].Text.ToString() == "Connecting")
+                        {
+                            MessageBox.Show("已经在聊天了", "无法发起会话"
+                                      , MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    foreach(string a in connected)
+                    {
+                        if (iitem.SubItems[2].Text.ToString() == a)
+                        {
+                            MessageBox.Show("已经在聊天了", "无法发起会话"
+                                      , MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
                 }
                     int Number_Connected = 0;
                     string Users_Broadcast_Msg;
@@ -841,12 +874,31 @@ namespace QICQ
                     {
                         if (iitem.SubItems[0].Text.ToString() == username) continue;
                         friends += iitem.SubItems[0].Text + "，";
+                        iitem.SubItems[2].Text = "Connecting";
+                        iitem.SubItems[0].BackColor = Color.LightBlue;
+                    connected.Add(iitem.SubItems[0].Text.ToString());
                     }
                     friends = friends.Substring(0, friends.Length - 1);
-
-                    Thread Thread_Chat = new Thread(() =>
-                    Application.Run(new ChatDialog(username, friends, Chatters, Number_Connected)));
-                    Thread_Chat.Start();
+                    string[] names = friends.Split('，');
+                    Task Thread_Chat = Task.Run(() =>
+                    Application.Run(new ChatDialog(username, friends, Chatters, Number_Connected, connected)));
+                    Thread_Chat.GetAwaiter().OnCompleted(() =>
+                    {
+                        int listnum = GetCount();
+                        for (int i = 0; i < listnum; i++)
+                        {
+                            string curid = GetListItem(i, 0);
+                            foreach(string ID in names)
+                            {
+                                if (curid == ID)
+                                {
+                                    SetListItem(i, 2, "OnLine");
+                                    SetListColor(i, 0, Color.LightGreen);
+                                    break;
+                                }
+                            }
+                        }
+                    });
             }
             else
             {

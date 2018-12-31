@@ -59,6 +59,7 @@
             // 
             // delbtn
             // 
+            this.delbtn.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.delbtn.FlatAppearance.BorderSize = 0;
             this.delbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.delbtn.Location = new System.Drawing.Point(119, 48);
