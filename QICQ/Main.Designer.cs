@@ -166,7 +166,7 @@
             this.skinTabControl1.PageImagePosition = CCWin.SkinControl.SkinTabControl.ePageImagePosition.Left;
             this.skinTabControl1.PageNorml = null;
             this.skinTabControl1.PageNormlTxtColor = System.Drawing.Color.DimGray;
-            this.skinTabControl1.SelectedIndex = 1;
+            this.skinTabControl1.SelectedIndex = 0;
             this.skinTabControl1.Size = new System.Drawing.Size(262, 468);
             this.skinTabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.skinTabControl1.TabIndex = 7;
@@ -199,6 +199,7 @@
             this.userlist.TabIndex = 3;
             this.userlist.UseCompatibleStateImageBehavior = false;
             this.userlist.View = System.Windows.Forms.View.Details;
+            this.userlist.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.Userlist_ColumnWidthChanging);
             this.userlist.DoubleClick += new System.EventHandler(this.Userlist_DoubleClick);
             this.userlist.MouseClick += new System.Windows.Forms.MouseEventHandler(this.userlist_MouseClick);
             // 

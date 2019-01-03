@@ -22,7 +22,6 @@ namespace QICQ
             InitializeComponent();
         }
 
-
         private void CallBack()
         {
             Main main = new Main(Username, client, this);

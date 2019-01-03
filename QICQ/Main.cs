@@ -338,7 +338,7 @@ namespace QICQ
             }
             else
             {
-                MessageBox.Show("注销失败", "信息", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                MessageBox.Show(receive_mess+"注销失败", "信息", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 return;
             }
         }
@@ -393,7 +393,15 @@ namespace QICQ
                 return ("");
             }
             byte[] IP_receive_byte = new byte[1024];
-            int number = Socket_user_server.Receive(IP_receive_byte);
+            int number;
+            try
+            {
+                number = Socket_user_server.Receive(IP_receive_byte);
+            }
+            catch (Exception)
+            {
+                return ("");
+            }
             string IP_receive_mess = Encoding.Default.GetString(IP_receive_byte, 0, number);
             return IP_receive_mess;            //接收用户信息
         }
@@ -483,6 +491,7 @@ namespace QICQ
             }
             else if (msg == "")
             {
+                MessageBox.Show("信息错误", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 searchbtn.Enabled = true;
                 return;
             }
@@ -651,6 +660,11 @@ namespace QICQ
                 }
                 catch (Exception)
                 {
+                    string[] savename = ID.Split('，');
+                    foreach (string a in savename)
+                    {
+                        connected.Remove(a);
+                    }
                     MessageBox.Show("未知错误，好友可能虚假在线", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     SetListColor(num, 0, Color.LightGreen);
                     SetListItem(num, 2, "OnLine");

@@ -723,8 +723,9 @@ namespace QICQ
                     foreach (Socket Client in sockets)
                     {
                         if (Client == null) break;
+                        if (!Client.Connected) continue;
                         Client.Send(data);
-                        Thread.Sleep(100);
+                        Thread.Sleep(500);
                         Client.BeginSendFile("Data/" + userID + "/Tmp/" + "recordvoice.wav", null, null, TransmitFileOptions.UseDefaultWorkerThread, new AsyncCallback(sendfinish), null);
 
                         void sendfinish(IAsyncResult iar)
