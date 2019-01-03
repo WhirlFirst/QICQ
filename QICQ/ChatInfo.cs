@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using System.Net.Sockets;
-using System.Net;
-using System.Threading;
 
 namespace QICQ
 {
@@ -22,17 +18,29 @@ namespace QICQ
         Socket Socket_user_server;
         List<string> connected;
         delegate void Dowork();
+
         public void Able()
         {
             this.openbtn.Enabled = true;
             delbtn.Enabled = true;
             openbtn.Text = "打开";
         }
+
         public ChatInfo()
         {
             InitializeComponent();
         }
-        public ChatInfo(string username, string mem,string[] ip,Socket server,List<string> vs)
+
+        #region 自定义控件初始化
+        /// <summary>
+        /// 自定义控件初始化
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="mem"></param>
+        /// <param name="ip"></param>
+        /// <param name="server"></param>
+        /// <param name="vs"></param>
+        public ChatInfo(string username, string mem, string[] ip, Socket server, List<string> vs)
         {
             connected = vs;
             member = mem;
@@ -40,9 +48,11 @@ namespace QICQ
             user = username;
             Socket_user_server = server;
             InitializeComponent();
-            TItle.Text = "与"+member+"的聊天";
+            TItle.Text = "与" + member + "的聊天";
         }
+        #endregion
 
+        #region 主窗口代码复用
         public string Search(string IDnumber)
         {
             string IP_search = "q" + IDnumber;//向服务器发送的查询信息
@@ -64,26 +74,6 @@ namespace QICQ
             string IP_receive_mess = Encoding.Default.GetString(IP_receive_byte, 0, number);
             return IP_receive_mess;
         }
-
-        private void delbtn_MouseEnter(object sender, EventArgs e)
-        {
-            delbtn.BackColor = Color.Red;
-            delbtn.ForeColor = Color.White;
-        }
-
-        private void delbtn_MouseLeave(object sender, EventArgs e)
-        {
-            delbtn.BackColor = Color.White;
-            delbtn.ForeColor = Color.Black;
-        }
-
-        private void delbtn_Click(object sender, EventArgs e)
-        {
-            string del = member.Replace("201601", "");
-            del = del.Replace('，', '_')+".rtf";
-            File.Delete("Data/" + user + "/Chat/" + del);
-        }
-
         public Socket Connect_GroupChat(string IP, string ID, string Users_Broadcast_Msg)
         {
             int port = Int32.Parse(ID.Substring(ID.Length - 4));
@@ -102,7 +92,28 @@ namespace QICQ
             tcpClient.Send(data);
             return tcpClient;
         }
+        #endregion
 
+        private void delbtn_MouseEnter(object sender, EventArgs e)
+        {
+            delbtn.BackColor = Color.Red;
+            delbtn.ForeColor = Color.White;
+        }
+
+        private void delbtn_MouseLeave(object sender, EventArgs e)
+        {
+            delbtn.BackColor = Color.White;
+            delbtn.ForeColor = Color.Black;
+        }
+
+        private void delbtn_Click(object sender, EventArgs e)
+        {
+            string del = member.Replace("201601", "");
+            del = del.Replace('，', '_') + ".rtf";
+            File.Delete("Data/" + user + "/Chat/" + del);
+        }
+
+        #region 发起聊天
         public void openbtn_Click(object sender, EventArgs e)
         {
             openbtn.Enabled = false;
@@ -112,9 +123,9 @@ namespace QICQ
             string Users_Broadcast_Msg;
             string[] friends = member.Split('，');
             int i = 0;
-            foreach(string ipa in IP)
+            foreach (string ipa in IP)
             {
-                if(ipa=="n")
+                if (ipa == "n")
                 {
                     IP[i] = Search(friends[i]);
                     if (IP[i] == "n")
@@ -129,9 +140,9 @@ namespace QICQ
                 i = i + 1;
             }
             string[] memarr = member.Split('，');
-            foreach(string a in memarr)
+            foreach (string a in memarr)
             {
-               foreach(string b in connected)
+                foreach (string b in connected)
                 {
                     if (b == a)
                     {
@@ -150,8 +161,8 @@ namespace QICQ
                  i = 0;
                  foreach (string ip in IP)
                  {
-                    //广播信息的第一条ID是自己的ID，ID与ID之间是连续的，通过/来分割
-                    Users_Broadcast_Msg = user;
+                     //广播信息的第一条ID是自己的ID，ID与ID之间是连续的，通过/来分割
+                     Users_Broadcast_Msg = user;
                      int j = 0;
                      foreach (string iitem in memarr)
                      {
@@ -180,5 +191,6 @@ namespace QICQ
                 Able();
             });
         }
+        #endregion
     }
 }

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QICQ
+﻿namespace QICQ
 {
-    using System.Runtime.Serialization.Formatters.Binary;
     using System.IO;
+    using System.Runtime.Serialization.Formatters.Binary;
     /// <summary>
     /// 负责将对象序列化成byte[]数组
     /// </summary>

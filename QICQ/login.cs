@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using CCWin;
+using System;
 using System.Drawing;
-using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using CCWin;
-using System.Net;
-using System.Net.Sockets;
-using System.IO;//命名空间
 namespace QICQ
 {
     public partial class Login : Skin_DevExpress
@@ -30,7 +25,7 @@ namespace QICQ
 
         private void CallBack()
         {
-            Main main = new Main(Username, client,this);
+            Main main = new Main(Username, client, this);
             main.Show();
             this.Hide();
         }
@@ -44,6 +39,11 @@ namespace QICQ
             pwd.Enabled = true;
         }
 
+        /// <summary>
+        /// 利用gif作为登录背景
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
             lgbtn.Show();
@@ -66,6 +66,12 @@ namespace QICQ
 
         }
 
+        #region 登录按钮响应
+        /// <summary>
+        /// 登录按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             Username = username.Text.ToString();
@@ -84,15 +90,19 @@ namespace QICQ
             fThread = new Thread(new ThreadStart(SleepT));
             fThread.Start();
             lgbtn.Hide();
-            username.Enabled=false;
+            username.Enabled = false;
             pwd.Enabled = false;
             gif.Show();
             ing.Show();
         }
+        #endregion
 
+        #region 后台线程连接
+        /// <summary>
+        /// 另开线程进行连接
+        /// </summary>
         private void SleepT()
         {
-            //尝试用同步套接字连接
             IPEndPoint ip_port = new IPEndPoint(Server, port);
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
             try
@@ -124,7 +134,6 @@ namespace QICQ
             string receive_mess = Encoding.Default.GetString(receive_byte, 0, number);
             if (receive_mess == "lol")
             {
-                MessageBox.Show("登录成功");
                 this.BeginInvoke(new Entrust(CallBack));
             }
             else
@@ -133,6 +142,7 @@ namespace QICQ
                 return;
             }
         }
+        #endregion
 
         private void lgbtn_MouseEnter(object sender, EventArgs e)
         {
@@ -148,8 +158,8 @@ namespace QICQ
 
         private void Login_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(fThread!=null) fThread.Abort();
-            
+            if (fThread != null) fThread.Abort();
+
         }
 
         private void closebtn_Click(object sender, EventArgs e)

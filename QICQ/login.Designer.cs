@@ -196,7 +196,7 @@
             this.gif.BorderColor = System.Drawing.Color.Transparent;
             this.gif.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.gif.Image = global::QICQ.Properties.Resources.tenor;
-            this.gif.Location = new System.Drawing.Point(181, 203);
+            this.gif.Location = new System.Drawing.Point(181, 210);
             this.gif.Name = "gif";
             this.gif.Size = new System.Drawing.Size(58, 58);
             this.gif.TabIndex = 6;

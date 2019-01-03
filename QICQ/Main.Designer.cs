@@ -116,6 +116,7 @@
             // 
             // delid
             // 
+            this.delid.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.delid.FlatAppearance.BorderSize = 0;
             this.delid.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.delid.Location = new System.Drawing.Point(10, 577);
@@ -268,7 +269,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "QICQ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
-            this.Load += new System.EventHandler(this.Main_Load);
             this.skinTabControl1.ResumeLayout(false);
             this.skinTabPage1.ResumeLayout(false);
             this.skinTabPage2.ResumeLayout(false);
