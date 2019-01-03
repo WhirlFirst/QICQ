@@ -79,6 +79,8 @@ namespace QICQ
             renew.SetApartmentState(ApartmentState.STA);
             renew.IsBackground = true;
             renew.Start();
+            recivebox.ShortcutsEnabled = false;
+            sendbox.ShortcutsEnabled = false;
         }
 
         public void ShowMsg_inRichTextBox(string str, Color color, HorizontalAlignment direction)
@@ -873,5 +875,30 @@ namespace QICQ
             savevoice.Start();
             return;
         }
+
+        private void recivebox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+                e.Handled = true;
+            if (e.Control && e.KeyCode == Keys.C)
+                e.Handled = true;
+        }
+
+        private void sendbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            //if (e.Control)
+            //    e.Handled = true;
+            //if (e.Control && e.KeyCode == Keys.C)
+            //    e.Handled = true;
+            //if (e.KeyCode == Keys.Enter)
+            //    sendbtn_Click(sender, e);
+        }
+
+        private void sendbox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+           if( e.KeyChar == (char)13)
+                sendbtn_Click(sender, e);
+        }
     }
 }
+

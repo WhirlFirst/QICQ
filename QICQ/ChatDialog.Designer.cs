@@ -74,6 +74,7 @@
             this.recivebox.Size = new System.Drawing.Size(680, 225);
             this.recivebox.TabIndex = 4;
             this.recivebox.Text = "";
+            this.recivebox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.recivebox_KeyDown);
             this.recivebox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.recivebox_MouseDoubleClick);
             // 
             // toolStrip1
@@ -177,6 +178,8 @@
             this.sendbox.Size = new System.Drawing.Size(680, 122);
             this.sendbox.TabIndex = 15;
             this.sendbox.Text = "";
+            this.sendbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.sendbox_KeyDown);
+            this.sendbox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.sendbox_KeyPress);
             // 
             // filebtn
             // 
