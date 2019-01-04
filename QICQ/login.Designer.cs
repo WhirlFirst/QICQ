@@ -140,7 +140,7 @@
             this.pwd.Icon = null;
             this.pwd.IconIsButton = false;
             this.pwd.IconMouseState = CCWin.SkinClass.ControlState.Normal;
-            this.pwd.IsPasswordChat = '6';
+            this.pwd.IsPasswordChat = '*';
             this.pwd.IsSystemPasswordChar = false;
             this.pwd.Lines = new string[] {
         "net2018"};
@@ -165,7 +165,7 @@
             this.pwd.SkinTxt.Font = new System.Drawing.Font("微软雅黑", 9.75F);
             this.pwd.SkinTxt.Location = new System.Drawing.Point(5, 5);
             this.pwd.SkinTxt.Name = "BaseText";
-            this.pwd.SkinTxt.PasswordChar = '6';
+            this.pwd.SkinTxt.PasswordChar = '*';
             this.pwd.SkinTxt.Size = new System.Drawing.Size(175, 18);
             this.pwd.SkinTxt.TabIndex = 0;
             this.pwd.SkinTxt.Text = "net2018";

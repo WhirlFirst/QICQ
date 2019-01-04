@@ -59,6 +59,7 @@
             this.holo.Size = new System.Drawing.Size(54, 20);
             this.holo.TabIndex = 0;
             this.holo.Text = "你好！";
+            this.holo.Click += new System.EventHandler(this.holo_Click);
             // 
             // searchtext
             // 
@@ -100,6 +101,7 @@
             this.searchtext.WaterColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
             this.searchtext.WaterText = "";
             this.searchtext.WordWrap = true;
+            this.searchtext.Paint += new System.Windows.Forms.PaintEventHandler(this.searchtext_Paint);
             // 
             // searchbtn
             // 

@@ -237,6 +237,7 @@ namespace QICQ
                 ListViewItem mid_list = new ListViewItem(mid_string);
                 this.userlist.Items.Add(mid_list);
             }
+            sr.Close();
             this.userlist.EndUpdate();
             foreach (ListViewItem item in userlist.Items)
             {
@@ -247,7 +248,6 @@ namespace QICQ
                 }
                 else item.SubItems[0].BackColor = Color.LightGray;
             }
-            sr.Close();
             flowLayoutPanel1.WrapContents = false;
             tcpServer = StartListening(tcpServer);
             msginfo = new Thread(() =>
@@ -334,10 +334,12 @@ namespace QICQ
             string receive_mess = Encoding.Default.GetString(receive_byte, 0, number);
             if (receive_mess == "loo")
             {
+                Socket_user_server.Close();
                 // MessageBox.Show("成功下线", "信息", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
             }
             else
             {
+                Socket_user_server.Close();
                 MessageBox.Show(receive_mess+"注销失败", "信息", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 return;
             }
@@ -408,11 +410,11 @@ namespace QICQ
         #endregion
 
         #region 异步动态更新好友列表
-        private void Searchall()//循环函数，每5秒自动刷新一次好友列表在线状态
+        private void Searchall()//循环函数，每3秒自动刷新一次好友列表在线状态
         {
-            IPEndPoint ip_port = new IPEndPoint(Server, 8000);
             while (true)
             {
+                Thread.Sleep(100);
                 int flag = 0;
                 int num = GetCount();
                 for (int i = 0; i < num; i++)
@@ -422,7 +424,7 @@ namespace QICQ
                     string oldmsg = GetListItem(i, 2);
                     if (oldmsg != "Connecting")
                     {
-                        if (msg == " ")
+                        if (msg == " "|| msg == "Please send the correct message." || msg == "Incorrect No.")
                         {
                             flag = 1;
                             break;
@@ -445,11 +447,11 @@ namespace QICQ
                                 SetListColor(i, 0, Color.Orange);
                             }
                         }
-                        Thread.Sleep(10);
                     }
                 }
-                if (flag == 1) break;
-                Thread.Sleep(5000);
+                if (flag == 1)
+                    Thread.Sleep(8000);
+                Thread.Sleep(3000);
             }
         }
         #endregion
@@ -936,6 +938,16 @@ namespace QICQ
                                      , MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+        }
+
+        private void searchtext_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void holo_Click(object sender, EventArgs e)
+        {
+
         }
     }
     #endregion

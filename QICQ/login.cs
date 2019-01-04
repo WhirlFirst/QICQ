@@ -124,6 +124,7 @@ namespace QICQ
             catch (Exception)
             {
                 MessageBox.Show("连接超时，请重新连接", "连接错误", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                this.BeginInvoke(new Entrust(BackNormal));
                 return;
             }
 
@@ -138,6 +139,7 @@ namespace QICQ
             else
             {
                 MessageBox.Show("账号或密码错误", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                this.BeginInvoke(new Entrust(BackNormal));
                 return;
             }
         }

@@ -200,7 +200,7 @@ namespace QICQ
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(this, ex.ToString(), "出现异常",
+                                MessageBox.Show(ex.ToString(), "出现异常",
                                   MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
 
@@ -447,6 +447,11 @@ namespace QICQ
                         FileStream fs = new FileStream(fileSavePath, FileMode.Create, FileAccess.Write);
                         while (true)
                         {
+                            if ((len - total) < buffer_size)
+                            {
+                                buffer = new byte[len - total];
+                                buffer_size = (int)len - total;
+                            }
                             received = File_client.Receive(buffer, buffer_size, SocketFlags.None);
                             fs.Write(buffer, 0, received);
                             fs.Flush();
@@ -691,6 +696,11 @@ namespace QICQ
         #region 语音录制及发送
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
+            if (sockets.Length > 1)
+            {
+                MessageBox.Show("语音消息目前不支持群发", "信息提示");
+                return;
+            }
             if (recordflag == 0)
             {
                 mciSendString("set wave bitpersample 8", "", 0, 0);  //设为8位
@@ -835,7 +845,7 @@ namespace QICQ
                 string fileSavePath = "Data/" + userID + "/Tmp/recive.wav";
                 int total = 0;
                 int received;
-                int buffer_size = 1024 * 1024;
+                int buffer_size = (int)(len+100);
                 byte[] buffer = new byte[buffer_size];
                 FileStream fs = new FileStream(fileSavePath, FileMode.Create, FileAccess.Write);
                 while (true)
@@ -853,6 +863,12 @@ namespace QICQ
                 fs.Close();
                 string strOpenFileName = fileSavePath;//打开的文件的全限定名
                 FileInfo fi = new FileInfo(strOpenFileName);
+                msg = new Message
+                {
+                    Type = Message.EType.voice,
+                    MsgBody = userID,
+                    Length = fi.Length
+                };
                 byte[] data = SerHelper.Serialize(msg);
                 foreach (Socket Client in sockets)
                 {
@@ -861,12 +877,7 @@ namespace QICQ
                     if (!Client.Connected) continue;
                     Client.Send(data);
                     Thread.Sleep(500);
-                    Client.BeginSendFile(strOpenFileName, null, null, TransmitFileOptions.UseDefaultWorkerThread, new AsyncCallback(sendfinish), null);
-
-                    void sendfinish(IAsyncResult iar)
-                    {
-                        Client.EndSendFile(iar);
-                    }
+                    Client.SendFile(strOpenFileName, null, null, TransmitFileOptions.UseDefaultWorkerThread);
                 }
                 MessageBox.Show("好友" + msg.MsgBody + "向您发送了语音消息！", "信息提示");
                 return;
