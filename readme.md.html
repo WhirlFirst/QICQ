@@ -583,6 +583,10 @@ pre.editor-colors .fold-marker:after {
 </style>
   </head>
   <body class='markdown-preview' data-use-github-style><h1 id="qicq">QICQ</h1>
+<h2 id="-">程序环境</h2>
+<p>本程序使用VS2017基于C#开发，在Windows平台运行。</p>
+<h2 id="-">运行必要组件</h2>
+<p>由于使用了第三方皮肤库，需要<code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">CSkin.dll</code>以及<code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">CSkin.xml</code>作为支持。除此之外，语音功能需要windows自带的<code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">winmm.dll</code>作为支持，目前在win10操作系统上都包含此文件，没有在其他操作系统上测试过。此外，运行程序还需要<code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">.Net FrameWork 4.6.1</code>作为基础支持。</p>
 <h2 id="-">文件说明</h2>
 <h3 id="resources-">Resources文件夹</h3>
 <p>涵盖了所有资源文件，确保按钮图标等能够正常显示</p>
@@ -602,8 +606,6 @@ pre.editor-colors .fold-marker:after {
 <p>序列化类，负责将信息序列化为2进制以及反序列化。</p>
 <h3 id="-">其余</h3>
 <p>为了支持Git和Vs系统自动生成的文件</p>
-<h2 id="-">运行必要组件</h2>
-<p>由于使用了第三方皮肤库，需要<code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">CSkin.dll</code>以及<code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">CSkin.xml</code>作为支持。除此之外，语音功能需要windows自带的<code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">winmm.dll</code>作为支持，目前在win10操作系统上都包含此文件，没有在其他操作系统上测试过。</p>
 <h2 id="-">使用说明</h2>
 <p>打开窗口，点击登录，进入通讯录窗口，点击帮助查看操作指南。双击好友与其聊天，按住<code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">Ctrl</code>选择多个好友，点击右下角群聊开始群聊。点击消息列表，可以选择对话，发起聊天。
 语音功能录制时图标变黑，要结束录制请再点击一次语音录制图标。接受语音后，播放键在语音录制键右侧。最右边的按键为窗口震动。</p></body>
