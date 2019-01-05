@@ -160,9 +160,6 @@
     <None Include="Resources\tenor.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\search.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Properties\1_logo800x600.png" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="num.ico" />
+    <None Include="Resources\search.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
