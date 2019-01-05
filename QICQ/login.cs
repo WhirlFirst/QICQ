@@ -6,11 +6,23 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 namespace QICQ
 {
     public partial class Login : Skin_DevExpress
     {
-        public delegate void Entrust();
+
+ 
+    [DllImport("user32.dll")]
+    public static extern bool ReleaseCapture();
+    [DllImport("user32.dll")]
+    public static extern bool SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
+    public const int WM_SYSCOMMAND = 0x0112;
+    public const int SC_MOVE = 0xF010;
+    public const int HTCAPTION = 0x0002;
+
+
+    public delegate void Entrust();
         IPAddress Server = IPAddress.Parse("166.111.140.14");
         int port = 8000;
         string Username;
@@ -176,6 +188,12 @@ namespace QICQ
         private void closebtn_MouseLeave(object sender, EventArgs e)
         {
             closebtn.ForeColor = Color.White;
+        }
+
+        private void Login_MouseDown(object sender, MouseEventArgs e)
+        {
+            ReleaseCapture();
+            SendMessage(this.Handle, WM_SYSCOMMAND, SC_MOVE + HTCAPTION, 0);
         }
     }
 }

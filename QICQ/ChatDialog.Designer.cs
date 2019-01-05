@@ -224,6 +224,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.recivebox);
             this.Controls.Add(this.sendbtn);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ChatDialog";
             this.Text = "ChatDialog";

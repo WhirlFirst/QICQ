@@ -267,6 +267,7 @@
             this.Controls.Add(this.searchbtn);
             this.Controls.Add(this.searchtext);
             this.Controls.Add(this.holo);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
