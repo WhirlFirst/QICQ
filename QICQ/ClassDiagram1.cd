@@ -24,8 +24,48 @@
       <FileName>SerHelper.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="QICQ.ChatDialog" Collapsed="true">
+  <Class Name="QICQ.ChatDialog">
     <Position X="6" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Delegate Name="QICQ.ChatDialog.RichBox_Show" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ChatDialog.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="QICQ.ChatDialog.DoWark" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ChatDialog.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="QICQ.ChatDialog.GetTxtLen" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ChatDialog.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="QICQ.ChatDialog.Paste" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ChatDialog.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="QICQ.ChatDialog.receive_save" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ChatDialog.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="QICQ.ChatDialog.Socket_close" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ChatDialog.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="QICQ.ChatDialog.Shakeshake" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ChatDialog.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
     <TypeIdentifier>
       <HashCode>BIQEAA1AECDgAAwkLMmUQkwSAgSCIAgCAABAAggKIAw=</HashCode>
       <FileName>ChatDialog.cs</FileName>
@@ -67,7 +107,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="QICQ.Main">
-    <Position X="6.25" Y="2.25" Width="1.5" />
+    <Position X="8.75" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Nested Types" Collapsed="false" />

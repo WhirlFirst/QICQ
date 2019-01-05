@@ -194,9 +194,8 @@ namespace QICQ
                                         while (!filefinsh) { }
                                         filefinsh = false;
                                         break;
-
                                 }
-                                Recive(links);
+                                ReciveOne(tcpClient);
                             }
                             catch (Exception ex)
                             {
@@ -206,6 +205,128 @@ namespace QICQ
 
                         }, null);
                     }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, ex.ToString(), "出现异常",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Invoke(new Action(this.Close));
+                    return;
+                }
+            }
+            else return;
+
+
+            void SocketClose(Socket socket)
+            {
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
+            }
+        }
+
+        public void ReciveOne(Socket tcpClient)
+        {
+            if (!canStop)
+            {
+                byte[] data = new byte[1024 * 2];
+                try
+                {
+                    if (tcpClient == null) return;
+                        if (!tcpClient.Connected) return;
+                        tcpClient.BeginReceive(data, 0, data.Length, SocketFlags.None,
+                        asyncResult =>
+                        {
+                            int length = 0;
+                            try
+                            {
+                                if (!tcpClient.Connected) return;
+                                length = tcpClient.EndReceive(asyncResult);
+                                if (length == 0)
+                                {
+                                    return;
+                                }
+                                Message msg = SerHelper.Deserialize<Message>(data);
+                                switch (msg.Type)
+                                {
+                                    case Message.EType.msg:
+                                        //如果当前写字框没有被占用
+                                        while (testBoxUsed) { };
+                                        //等到其他线程解除了写字框的占用
+                                        testBoxUsed = true;
+                                        RichBox_Show rb_s = new RichBox_Show(ShowMsg_inRichTextBox);
+                                        string show_string = msg.MsgBody;
+                                        this.Invoke(rb_s, new object[] { "\n", Color.Black, HorizontalAlignment.Left });
+                                        this.Invoke(rb_s, new object[] { show_string, Color.Black, HorizontalAlignment.Left });
+                                        testBoxUsed = false;
+                                        if (sockets.Length > 1)
+                                        {
+                                            foreach (Socket Client in sockets)
+                                            {
+                                                if (Client == null) break;
+                                                if (Client == tcpClient) continue;
+                                                if (Client.Connected) AsynSend(Client, msg);
+                                            }
+                                        }
+                                        break;
+
+                                    case Message.EType.file:
+                                        receive_save r_s = new receive_save(ReceiveFileConnect);
+                                        this.Invoke(r_s, new object[] { tcpClient, msg });
+                                        while (!filefinsh) { }
+                                        filefinsh = false;
+                                        break;
+                                    case Message.EType.lgo:
+                                        MessageBox.Show("好友" + msg.MsgBody + "退出了会话", "信息提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        if ((conNum > 1) && (msg.Length == 0))
+                                        {
+                                            conNum = conNum - 1;
+                                        }
+                                        else
+                                        {
+                                            this.Invoke(new Action(this.Close));
+                                            return;
+                                        }
+                                        if (sockets.Length > 1)
+                                        {
+                                            Socket_close socket_ = new Socket_close(SocketClose);
+                                            this.Invoke(socket_, new object[] { tcpClient });
+                                            foreach (Socket Client in sockets)
+                                            {
+                                                if (Client == null) break;
+                                                if (Client == tcpClient) continue;
+                                                if (Client.Connected) AsynSend(Client, msg);
+                                            }
+                                        }
+                                        break;
+                                    case Message.EType.dd:
+                                        Shakeshake shakeshake = new Shakeshake(Shake);
+                                        this.Invoke(shakeshake);
+                                        if (sockets.Length > 1)
+                                        {
+                                            foreach (Socket Client in sockets)
+                                            {
+                                                if (Client == null) break;
+                                                if (Client == tcpClient) continue;
+                                                if (Client.Connected) AsynSend(Client, msg);
+                                            }
+                                        }
+                                        break;
+                                    case Message.EType.voice:
+                                        receive_save r_v = new receive_save(ReceiveVoice);
+                                        this.Invoke(r_v, new object[] { tcpClient, msg });
+                                        while (!filefinsh) { }
+                                        filefinsh = false;
+                                        break;
+                                }
+                                ReciveOne(tcpClient);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.ToString(), "出现异常",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+
+                        }, null);
                 }
                 catch (Exception ex)
                 {
@@ -514,6 +635,11 @@ namespace QICQ
                     FileStream fs = new FileStream(fileSavePath, FileMode.Create, FileAccess.Write);
                     while (true)
                     {
+                        if ((len - total) < buffer_size)
+                        {
+                            buffer = new byte[len - total];
+                            buffer_size = (int)len - total;
+                        }
                         received = File_client.Receive(buffer, buffer_size, SocketFlags.None);
                         fs.Write(buffer, 0, received);
                         fs.Flush();
@@ -696,11 +822,11 @@ namespace QICQ
         #region 语音录制及发送
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            if (sockets.Length > 1)
-            {
-                MessageBox.Show("语音消息目前不支持群发", "信息提示");
-                return;
-            }
+            //if (sockets.Length > 1)
+            //{
+            //    MessageBox.Show("语音消息目前不支持群发", "信息提示");
+            //    return;
+            //}
             if (recordflag == 0)
             {
                 mciSendString("set wave bitpersample 8", "", 0, 0);  //设为8位
@@ -845,7 +971,7 @@ namespace QICQ
                 string fileSavePath = "Data/" + userID + "/Tmp/recive.wav";
                 int total = 0;
                 int received;
-                int buffer_size = (int)(len+100);
+                int buffer_size = (int)(len);
                 byte[] buffer = new byte[buffer_size];
                 FileStream fs = new FileStream(fileSavePath, FileMode.Create, FileAccess.Write);
                 while (true)
@@ -861,14 +987,9 @@ namespace QICQ
                 }
                 filefinsh = true;
                 fs.Close();
+                Thread.Sleep(800);
                 string strOpenFileName = fileSavePath;//打开的文件的全限定名
                 FileInfo fi = new FileInfo(strOpenFileName);
-                msg = new Message
-                {
-                    Type = Message.EType.voice,
-                    MsgBody = userID,
-                    Length = fi.Length
-                };
                 byte[] data = SerHelper.Serialize(msg);
                 foreach (Socket Client in sockets)
                 {
